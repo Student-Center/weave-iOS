@@ -103,6 +103,11 @@ struct AppTabViewFeature: Reducer {
             case .didTappedCancelInvitation:
                 state.invitedTeamInfo = nil
                 return .none
+                
+            case .myPage(.didSuccessedResign):
+                tabViewCoordinator.changeTab(to: .home)
+                // ToDo - 각 뷰 들의 데이터 초기화
+                return .none
             
             case .binding:
                 return .none

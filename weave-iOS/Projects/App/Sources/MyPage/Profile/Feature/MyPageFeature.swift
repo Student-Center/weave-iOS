@@ -12,6 +12,7 @@ import AVFoundation
 import DesignSystem
 
 struct MyPageFeature: Reducer {
+    @Dependency(\.tabViewCoordinator) var tabViewCoordinator
     struct State: Equatable {
         var myUserInfo: MyUserInfoModel?
         @BindingState var isShowEditProfileImageAlert: Bool = false
@@ -35,6 +36,7 @@ struct MyPageFeature: Reducer {
         case showPhotoPicker
         case didTappedShowCamera
         case didCameraPermissionDenied
+        case didSuccessedResign
         case showCamera
         case showAppPreference
         case didPickPhotoCompleted(image: UIImage)
@@ -125,6 +127,15 @@ struct MyPageFeature: Reducer {
             case .destination(.presented(.univVerify(.didCompleteVerifyEmail))):
                 state.destination = nil
                 state.isShowCompleteUnivVerifyAlert.toggle()
+                return .none
+                
+            case .destination(.presented(.presentSetting(.resignSuccessed))):
+                state.destination = nil
+                return .run { send in
+                    await send.callAsFunction(.didSuccessedResign)
+                }
+                
+            case .didSuccessedResign:
                 return .none
                 
             case .showPhotoPicker:

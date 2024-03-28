@@ -11,7 +11,7 @@ import DesignSystem
 import Services
 
 struct SignUpFeature: Reducer {
-    @EnvironmentObject private var coordinator: AppCoordinator
+    @Dependency(\.coordinator) var coordinator
     
     struct State: Equatable {
         let registerToken: String
