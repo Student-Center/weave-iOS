@@ -10,6 +10,8 @@ import ComposableArchitecture
 import Services
 
 struct RequestListFeature: Reducer {
+    @Dependency(\.tabViewCoordinator) var tabViewCoordinator
+    
     struct State: Equatable {
         @PresentationState var destination: Destination.State?
         
@@ -24,6 +26,7 @@ struct RequestListFeature: Reducer {
     enum Action: BindableAction {
         //MARK: UserAction
         case didTappedMeetingView(index: Int, type: RequestListType)
+        case didTappedLookAroundMeetingList
         case onAppear(type: RequestListType)
         
         case requestList(type: RequestListType)
@@ -71,6 +74,9 @@ struct RequestListFeature: Reducer {
                 }
                 return .none
                 
+            case .didTappedLookAroundMeetingList:
+                tabViewCoordinator.changeTab(to: .home)
+
             case .processRequestError(let type):
                 switch type {
                 case .receiving:

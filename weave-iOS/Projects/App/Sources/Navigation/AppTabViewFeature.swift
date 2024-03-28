@@ -10,9 +10,9 @@ import Services
 import ComposableArchitecture
 
 struct AppTabViewFeature: Reducer {
+    @Dependency(\.tabViewCoordinator) var tabViewCoordinator
+    
     struct State: Equatable {
-        @BindingState var selection: AppScreen = .home
-        
         @BindingState var isShowInvitationConfirmAlert = false
         
         var invitedTeamInfo: MeetingTeamInfoModel?
@@ -97,7 +97,7 @@ struct AppTabViewFeature: Reducer {
                 }
                 
             case .didSuccessEnterTeam:
-                state.selection = .myTeam
+                tabViewCoordinator.changeTab(to: .myTeam)
                 return .none
                 
             case .didTappedCancelInvitation:

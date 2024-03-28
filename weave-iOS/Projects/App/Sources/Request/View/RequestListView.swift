@@ -25,7 +25,9 @@ struct RequestListView: View {
                         if !viewStore.isReceiveDataRequested {
                             ProgressView()
                         } else if viewStore.isReceiveDataRequested && viewStore.receivedDataSources.isEmpty {
-                            getEmptyView()
+                            getEmptyView() {
+                                viewStore.send(.didTappedLookAroundMeetingList)
+                            }
                         } else {
                             getMeetingListView(
                                 type: .receiving,
@@ -53,7 +55,9 @@ struct RequestListView: View {
                         if !viewStore.isSentDataRequested {
                             ProgressView()
                         } else if viewStore.isSentDataRequested && viewStore.sentDataSources.isEmpty {
-                            getEmptyView()
+                            getEmptyView() {
+                                viewStore.send(.didTappedLookAroundMeetingList)
+                            }
                         } else {
                             getMeetingListView(
                                 type: .requesting,
@@ -123,7 +127,7 @@ struct RequestListView: View {
     }
     
     @ViewBuilder
-    func getEmptyView() -> some View {
+    func getEmptyView(handler: @escaping () -> Void) -> some View {
         VStack(alignment: .center, spacing: 10) {
             Text("미팅을 요청해 보세요!")
                 .font(.pretendard(._600, size: 22))
@@ -133,7 +137,7 @@ struct RequestListView: View {
             Spacer()
                 .frame(height: 20)
             WeaveButton(title: "미팅 상대 둘러보기", size: .large) {
-                //                handler()
+                handler()
             }
             .padding(.horizontal, 80)
         }

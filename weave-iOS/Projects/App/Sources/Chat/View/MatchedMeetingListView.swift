@@ -21,7 +21,9 @@ struct MatchedMeetingListView: View {
                     if !viewStore.isNetworkRequested {
                         ProgressView()
                     } else if viewStore.isNetworkRequested && viewStore.teamList.isEmpty {
-                        getEmptyView {}
+                        getEmptyView {
+                            viewStore.send(.didTappedLookAroundMeetingList)
+                        }
                     } else {
                         ScrollView {
                             LazyVGrid(columns: [column], spacing: 16, content: {
@@ -70,9 +72,9 @@ struct MatchedMeetingListView: View {
     func getEmptyView(handler: @escaping () -> Void) -> some View {
         VStack(spacing: 10) {
             Text("🙏")
-            Text("조금만 기다려 주세요")
+            Text("미팅을 요청해 보세요!")
                 .font(.pretendard(._600, size: 22))
-            Text("채팅 기능을 포함한 버전이\n곧 업데이트 될 예정이에요!")
+            Text("미팅을 요청해야 매칭이 시작돼요!")
                 .font(.pretendard(._500, size: 14))
                 .foregroundStyle(DesignSystem.Colors.gray600)
             Spacer()
