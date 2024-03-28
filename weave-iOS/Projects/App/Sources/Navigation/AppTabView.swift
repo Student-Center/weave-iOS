@@ -11,7 +11,6 @@ import ComposableArchitecture
 
 struct AppTabView: View {
     var store: StoreOf<AppTabViewFeature>
-    @EnvironmentObject private var coordinator: AppCoordinator
     @State var tabViewCoordinator = TabViewCoordinator.shared
     
     var body: some View {
