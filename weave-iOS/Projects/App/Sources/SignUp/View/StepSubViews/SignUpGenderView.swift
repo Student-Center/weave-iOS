@@ -14,29 +14,29 @@ struct SignUpGenderView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack {
-                Spacer()
-                    .frame(height: 50)
+            ZStack(alignment: .center) {
+                VStack {
+                    
+                    Spacer()
+                    
+                    WeaveButton(
+                        title: "다음으로",
+                        size: .large,
+                        isEnabled: viewStore.selectedGender != nil
+                    ) {
+                        viewStore.send(
+                            .didTappedNextButton,
+                            animation: .easeInOut(duration: 0.2)
+                        )
+                    }
+                    .padding(.bottom, 20)
+                }
+                
                 HStack(spacing: 56) {
                     genderSelectionView(.boy)
                     genderSelectionView(.girl)
                 }
-                .padding(.vertical, 50)
-                
-                
-                Spacer()
-                
-                WeaveButton(
-                    title: "다음으로",
-                    size: .medium,
-                    isEnabled: viewStore.selectedGender != nil
-                ) {
-                    viewStore.send(
-                        .didTappedNextButton,
-                        animation: .easeInOut(duration: 0.2)
-                    )
-                }
-                .padding(.bottom, 20)
+                .offset(y: -65)
             }
         }
     }
