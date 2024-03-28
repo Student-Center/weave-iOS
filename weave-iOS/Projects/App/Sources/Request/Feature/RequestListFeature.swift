@@ -28,6 +28,7 @@ struct RequestListFeature: Reducer {
         
         case requestList(type: RequestListType)
         case requestNextPage(type: RequestListType)
+        case processRequestError(type: RequestListType)
         
         case fetchData(dto: RequestMeetingListResponseDTO, type: RequestListType)
         case destination(PresentationAction<Destination.Action>)
@@ -70,6 +71,15 @@ struct RequestListFeature: Reducer {
                 }
                 return .none
                 
+            case .processRequestError(let type):
+                switch type {
+                case .receiving:
+                    state.isReceiveDataRequested = true
+                case .requesting:
+                    state.isSentDataRequested = true
+                }
+                return .none
+                
             case .destination(.dismiss):
                 state.destination = nil
                 return .none
@@ -97,7 +107,7 @@ struct RequestListFeature: Reducer {
                     let response = try await requestMeetingList(type: type)
                     await send.callAsFunction(.fetchData(dto: response, type: type))
                 } catch: { error, send in
-                    print(error)
+                    await send.callAsFunction(.processRequestError(type: type))
                 }
                 
             case .requestNextPage(let type):
