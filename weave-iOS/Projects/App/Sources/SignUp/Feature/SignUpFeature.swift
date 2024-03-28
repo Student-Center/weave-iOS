@@ -16,7 +16,7 @@ struct SignUpFeature: Reducer {
     struct State: Equatable {
         let registerToken: String
         // 현단계 상태값
-        var currentStep: SignUpStepTypes = .gender
+        var currentStep: SignUpStepTypes = .agreement
         // 성별
         var selectedGender: GenderTypes?
         // 나이
@@ -33,6 +33,10 @@ struct SignUpFeature: Reducer {
         var majorLists = [MajorModel]()
         var filteredMajorLists = [MajorModel]()
         var selectedmajor: MajorModel?
+        // 약관 동의
+        @BindingState var isAgeCompatibilityEnabled = false
+        @BindingState var isServiceAgreementEnabled = false
+        @BindingState var isPrivacyAgreementEnabled = false
         // 닫기 Alert
         @BindingState var isDismissAlertShow: Bool = false
     }
@@ -56,6 +60,10 @@ struct SignUpFeature: Reducer {
         // 회원가입 완료
         case fetchTokens(dto: SNSLoginResponseDTO)
         case didCompleteSignUp
+        // 동의
+        case didAllAgreeChanged(value: Bool)
+        case didAgreeElementChanged
+        case didTappedAgreementView(url: URL?)
         // bind
         case binding(BindingAction<State>)
     }
@@ -182,6 +190,19 @@ struct SignUpFeature: Reducer {
                 state.majorText = major.name
                 return .none
                 
+            case .didAllAgreeChanged(let value):
+                withAnimation {
+                    state.isAgeCompatibilityEnabled = value
+                    state.isServiceAgreementEnabled = value
+                    state.isPrivacyAgreementEnabled = value
+                }
+                return .none
+                
+            case .didTappedAgreementView(let url):
+                guard let url else { return .none }
+                UIApplication.shared.open(url)
+                return .none
+                
             case .didCompleteSignUp:
                 coordinator.changeRoot(to: .mainView)
                 return .none
@@ -239,6 +260,7 @@ extension SignUpFeature {
         case mbti = 2
         case university = 3
         case major = 4
+        case agreement = 5
         
         var title: String {
             switch self {
@@ -252,6 +274,8 @@ extension SignUpFeature {
                 return "어느 대학교에 다니시나요?"
             case .major:
                 return "어떤 학과를 전공하고 계시나요?"
+            case .agreement:
+                return "환영합니다!\n아래 약관에 동의해주세요."
             }
         }
     }

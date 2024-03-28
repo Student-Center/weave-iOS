@@ -39,7 +39,7 @@ struct SignUpYearView: View {
                 
                 WeaveButton(
                     title: "다음으로",
-                    size: .medium,
+                    size: .large,
                     isEnabled: validateNextButton(year: viewStore.birthYear)
                 ) {
                     viewStore.send(
