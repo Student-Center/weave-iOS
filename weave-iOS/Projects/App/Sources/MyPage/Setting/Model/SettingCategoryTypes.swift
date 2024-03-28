@@ -53,10 +53,10 @@ enum SettingCategoryTypes: CaseIterable {
         var url: URL? {
             switch self {
             case .termsAndConditions:
-                guard let url = Constant.termsAndConditionsUrl else { return nil }
+                guard let url = URL(string: "https://weave-org.notion.site/WEAVE-a0fa6c2774a94043b9575b4db3a8ea15") else { return nil }
                 return url
             case .privacyPolicy:
-                guard let url = Constant.privacyPolicy else { return nil }
+                guard let url = URL(string: "https://weave-org.notion.site/WEAVE-a65c3e3a483e4ec1bcc94353b21f771b") else { return nil }
                 return url
             case .logout, .unregister: return nil
             }

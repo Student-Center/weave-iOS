@@ -124,14 +124,14 @@ struct SignUpAgreementView: View {
                 getAgreementHStack(
                     title: "(필수) 위브 서비스 이용약관 동의",
                     isEnabled: viewStore.$isServiceAgreementEnabled,
-                    link: Constant.termsAndConditionsUrl
+                    link: URLConstant.termsAndConditionsUrl
                 ) { url in
                     viewStore.send(.didTappedAgreementView(url: url))
                 }
                 getAgreementHStack(
                     title: "(필수) 개인정보 수집 및 이용약관 동의",
                     isEnabled: viewStore.$isPrivacyAgreementEnabled,
-                    link: Constant.privacyPolicy
+                    link: URLConstant.privacyPolicy
                 ) { url in
                     viewStore.send(.didTappedAgreementView(url: url))
                 }
