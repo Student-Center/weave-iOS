@@ -76,6 +76,7 @@ struct RequestListFeature: Reducer {
                 
             case .didTappedLookAroundMeetingList:
                 tabViewCoordinator.changeTab(to: .home)
+                return .none
 
             case .processRequestError(let type):
                 switch type {
