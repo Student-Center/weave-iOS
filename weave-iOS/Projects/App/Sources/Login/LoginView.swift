@@ -12,7 +12,7 @@ import ComposableArchitecture
 
 struct LoginView: View {
     @Dependency(\.coordinator) var coordinator
-//    @EnvironmentObject private var coordinator: AppCoordinator
+    @State private var networkErrorManager = ServiceErrorManager.shared
     
     var body: some View {
         VStack {
@@ -37,6 +37,12 @@ struct LoginView: View {
             
             Spacer()
                 .frame(height: 58)
+        }
+        .weaveErrorMessage(
+            isPresented: $networkErrorManager.needShowErrorAlert,
+            message: networkErrorManager.errorMessage
+        ) {
+            networkErrorManager.handleAlertConfirmAction()
         }
     }
     

@@ -8,10 +8,12 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import Services
 
 struct AppTabView: View {
     var store: StoreOf<AppTabViewFeature>
     @State var tabViewCoordinator = TabViewCoordinator.shared
+    @State private var networkErrorManager = ServiceErrorManager.shared
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
@@ -120,6 +122,12 @@ struct AppTabView: View {
                     viewStore.send(.didTappedCancelInvitation)
                 }
             )
+            .weaveErrorMessage(
+                isPresented: $networkErrorManager.needShowErrorAlert,
+                message: networkErrorManager.errorMessage
+            ) {
+                networkErrorManager.handleAlertConfirmAction()
+            }
         }
     }
 }

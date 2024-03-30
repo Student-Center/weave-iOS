@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import Services
 import DesignSystem
 import ComposableArchitecture
 
 struct SignUpView: View {
     
     let store: StoreOf<SignUpFeature>
+    @State private var networkErrorManager = ServiceErrorManager.shared
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
@@ -78,6 +80,12 @@ struct SignUpView: View {
                         }
                     )
                 }
+            }
+            .weaveErrorMessage(
+                isPresented: $networkErrorManager.needShowErrorAlert,
+                message: networkErrorManager.errorMessage
+            ) {
+                networkErrorManager.handleAlertConfirmAction()
             }
         }
     }
