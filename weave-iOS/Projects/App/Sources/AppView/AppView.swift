@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import DesignSystem
+import Services
 import ComposableArchitecture
 
 struct AppView: View {
-    @State private var coordinator = AppCoordinator.shared
+    @ObservedObject private var coordinator = AppCoordinator.shared
+    @State private var networkErrorManager = ServiceErrorManager.shared
     
     var body: some View {
         NavigationStack(path: $coordinator.paths) {

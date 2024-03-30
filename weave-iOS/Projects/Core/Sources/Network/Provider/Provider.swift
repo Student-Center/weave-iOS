@@ -19,7 +19,7 @@ public class APIProvider {
         self.session = session
     }
     
-    public func request<R: Decodable, E: RequestResponsable>(with endPoint: E, completion: @escaping (Result<R, Error>) -> Void) where E.Response == R {
+    public func request<R: Decodable, E: RequestResponsable>(with endPoint: E, showErrorAlert: Bool = true, completion: @escaping (Result<R, Error>) -> Void) where E.Response == R {
         
         do {
             let request = try endPoint.getUrlRequest()
@@ -39,6 +39,11 @@ public class APIProvider {
                     
                     guard let response = try? JSONDecoder().decode(R.self, from: data) else {
                         completion(.failure(NetworkError.decodeError))
+                        ServiceErrorManager.shared.handleErrorResponse(
+                            data: data,
+                            response: response,
+                            needShowAlert: showErrorAlert
+                        )
                         return
                     }
                     
@@ -52,13 +57,18 @@ public class APIProvider {
         }
     }
     
-    public func request<R: Decodable, E: RequestResponsable>(with endPoint: E) async throws -> R where E.Response == R {
+    public func request<R: Decodable, E: RequestResponsable>(with endPoint: E, showErrorAlert: Bool = true) async throws -> R where E.Response == R {
         do {
             let urlRequest = try endPoint.getUrlRequest()
             let (data, urlResponse) = try await session.data(for: urlRequest)
             endPoint.responseLogger(response: urlResponse, data: data)
             guard let response = urlResponse as? HTTPURLResponse,
                   (200...399).contains(response.statusCode) else {
+                ServiceErrorManager.shared.handleErrorResponse(
+                    data: data,
+                    response: urlResponse,
+                    needShowAlert: showErrorAlert
+                )
                 throw NetworkError.unknownError // 또는 적절한 오류 처리
             }
 
@@ -69,7 +79,7 @@ public class APIProvider {
         }
     }
     
-    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E, successCode: Int = 204) async throws {
+    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E, successCode: Int = 204, showErrorAlert: Bool = true) async throws {
         do {
             let urlRequest = try endPoint.getUrlRequest()
             
@@ -82,6 +92,11 @@ public class APIProvider {
             if response.statusCode == successCode {
                 return
             } else {
+                ServiceErrorManager.shared.handleErrorResponse(
+                    data: data,
+                    response: urlResponse,
+                    needShowAlert: showErrorAlert
+                )
                 throw NetworkError.invalidHttpStatusCode(response.statusCode)
             }
         } catch {
@@ -91,7 +106,7 @@ public class APIProvider {
 }
 
 extension APIProvider {
-    public func requestSNSLogin<R: Decodable, E: RequestResponsable>(with endPoint: E) async throws -> R where E.Response == R {
+    public func requestSNSLogin<R: Decodable, E: RequestResponsable>(with endPoint: E, showErrorAlert: Bool = true) async throws -> R where E.Response == R {
         do {
             let urlRequest = try endPoint.getUrlRequest()
             let (data, urlResponse) = try await session.data(for: urlRequest)
@@ -105,6 +120,11 @@ extension APIProvider {
                     let decodedResponse = try JSONDecoder().decode(SignUpRegisterTokenResponse.self, from: data)
                     throw LoginNetworkError.needRegist(registerToken: decodedResponse)
                 }
+                ServiceErrorManager.shared.handleErrorResponse(
+                    data: data,
+                    response: urlResponse,
+                    needShowAlert: showErrorAlert
+                )
                 throw NetworkError.unknownError
             }
 
@@ -117,14 +137,19 @@ extension APIProvider {
 }
 
 extension APIProvider {
-    public func requestUploadData<E: RequestResponsable>(with endPoint: E, data: Data) async throws {
+    public func requestUploadData<E: RequestResponsable>(with endPoint: E, data: Data, showErrorAlert: Bool = true) async throws {
         do {
             let urlRequest = try endPoint.getUrlRequest()
             let (data, urlResponse) = try await session.upload(for: urlRequest, from: data)
             endPoint.responseLogger(response: urlResponse, data: data)
             guard let response = urlResponse as? HTTPURLResponse,
                   (200...399).contains(response.statusCode) else {
-                throw NetworkError.unknownError // 또는 적절한 오류 처리
+                ServiceErrorManager.shared.handleErrorResponse(
+                    data: data,
+                    response: urlResponse,
+                    needShowAlert: showErrorAlert
+                )
+                throw NetworkError.unknownError
             }
             guard 200 <= response.statusCode && response.statusCode <= 299 else {
                 throw NetworkError.invalidHttpStatusCode(response.statusCode)
