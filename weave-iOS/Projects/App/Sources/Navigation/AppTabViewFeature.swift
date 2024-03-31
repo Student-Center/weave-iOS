@@ -108,6 +108,10 @@ struct AppTabViewFeature: Reducer {
                 tabViewCoordinator.changeTab(to: .home)
                 // ToDo - 각 뷰 들의 데이터 초기화
                 return .none
+                
+            case .meetingTeamList(.pushToUnivVerifyView):
+                state.myPage.myUserInfo = UserInfo.myInfo
+                return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
             
             case .binding:
                 return .none

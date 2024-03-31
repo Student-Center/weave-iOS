@@ -81,7 +81,7 @@ struct MeetingTeamDetailView: View {
                             }
                         )
                         .weaveAlert(
-                            isPresented: viewStore.$isShowNoTeamAlert,
+                            isPresented: viewStore.$isShowNeedUnivVerifyAlert,
                             title: "대학교 인증이 필요해요",
                             message: """
                                 학교 메일을 인증한 회원만

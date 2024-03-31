@@ -18,12 +18,12 @@ struct MeetingTeamDetailFeature: Reducer {
         let teamId: String
         @BindingState var teamModel: MeetingTeamDetailModel?
         @BindingState var isShowRequestMeetingConfirmAlert = false
-        @BindingState var isShowNeedUnivVerifyAlert = false
         @BindingState var isShowNoTeamAlert = false
         @BindingState var isShowRequestSuccessAlert = false
         
         var meetingId: String?
         @BindingState var isShowAttendAlert = false
+        @BindingState var isShowNeedUnivVerifyAlert = false
         @BindingState var isShowPassAlert = false
         @BindingState var isShowCompleteAttendAlert = false
         @BindingState var isShowCompletePassAlert = false
@@ -46,6 +46,7 @@ struct MeetingTeamDetailFeature: Reducer {
         
         //MARK: Alert Effect
         case makeTeamAction
+        case needUnivVerify
         case univVerifyAction
         case requestMeeting
         case successedRequestMeeting
@@ -79,12 +80,25 @@ struct MeetingTeamDetailFeature: Reducer {
                 
             // 미팅 요청
             case .requestMeeting:
+                guard UserInfo.myInfo?.isUniversityEmailVerified == true else {
+                    return .run { send in
+                        await send.callAsFunction(.needUnivVerify)
+                    }
+                }
                 return .run { [teamId = state.teamId] send in
                     try await requestMeeting(targetTeamId: teamId)
                     await send.callAsFunction(.successedRequestMeeting)
                 } catch: { error, send in
                     print(error)
                 }
+                
+            case .needUnivVerify:
+                state.isShowNeedUnivVerifyAlert.toggle()
+                return .none
+                
+            case .univVerifyAction:
+                print("대학교 인증으로")
+                return .none
                 
             case .successedRequestMeeting:
                 state.isShowRequestSuccessAlert.toggle()
