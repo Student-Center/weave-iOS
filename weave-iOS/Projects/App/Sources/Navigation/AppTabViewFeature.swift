@@ -104,6 +104,10 @@ struct AppTabViewFeature: Reducer {
                     return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
                 }
                 return .none
+                
+            case .meetingTeamList(.pushToUnivVerifyView):
+                state.myPage.myUserInfo = UserInfo.myInfo
+                return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
             
             case .binding:
                 return .none
