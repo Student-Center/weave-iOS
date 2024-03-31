@@ -10,6 +10,8 @@ import Services
 import ComposableArchitecture
 
 struct MeetingTeamListFeature: Reducer {
+    @Dependency(\.tabViewCoordinator) var tabViewCoordinator
+    
     struct State: Equatable {
         @BindingState var teamList = [MeetingTeamModel]()
         
@@ -30,6 +32,7 @@ struct MeetingTeamListFeature: Reducer {
         
         // destination
         case destination(PresentationAction<Destination.Action>)
+        case pushToUnivVerifyView
         
         // bind
         case binding(BindingAction<State>)
@@ -90,6 +93,13 @@ struct MeetingTeamListFeature: Reducer {
                 }
             case .destination(.dismiss):
                 state.destination = nil
+                return .none
+                
+            case .destination(.presented(.teamDetail(.univVerifyAction))):
+                return .send(.pushToUnivVerifyView)
+                
+            case .pushToUnivVerifyView:
+                tabViewCoordinator.changeTab(to: .myPage)
                 return .none
                 
             default:
