@@ -72,6 +72,7 @@ public struct WeaveAlert: View {
                         if let secondaryButtonTitle {
                             WeaveButton(
                                 title: secondaryButtonTitle,
+                                size: .large,
                                 backgroundColor: DesignSystem.Colors.lightGray
                             ) {
                                 isPresented.toggle()
@@ -82,6 +83,7 @@ public struct WeaveAlert: View {
                         
                         WeaveButton(
                             title: primaryButtonTitle,
+                            size: .large,
                             backgroundColor: primaryButtonColor
                         ) {
                             isPresented.toggle()
