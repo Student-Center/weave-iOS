@@ -38,6 +38,7 @@ struct SettingFeautre: Reducer {
                         UIApplication.shared.open(url)
                     }
                 case .myID:
+                    // TODO: kakaoID 복사
                     UIPasteboard.general.string = "kakaoID"
                     state.isShowPasteSuccessAlert = true
                 case .logout:

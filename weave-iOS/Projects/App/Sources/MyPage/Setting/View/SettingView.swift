@@ -38,7 +38,8 @@ struct SettingView: View {
                 }
                 Spacer(minLength: 200)
                 HStack {
-                    Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
+                    // TODO: 레이아웃 조정
+                    Text("Version \(appVersion())")
                     Text("최신버젼")
                 }
                 Spacer()
@@ -67,17 +68,12 @@ struct SettingView: View {
                     viewStore.send(.showUnregisterAlert(model: coordinator))
                 }
             )
-            .weaveAlert(
-                isPresented: viewStore.$isShowPasteSuccessAlert,
-                title: "복사",
-                message: "조금만 있으면 새로운 기능들이 추가돼요!\n 한번 더 생각해보시는 건 어떠세요?",
-                primaryButtonTitle: "탈퇴할래요",
-                secondaryButtonTitle: "아니요",
-                primaryAction: {
-
-                }
-            )
+            // TODO: Weave Toast 추가
         }
+    }
+    
+    private func appVersion() -> String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 }
 
