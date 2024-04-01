@@ -11,11 +11,11 @@ import ComposableArchitecture
 
 struct AppTabView: View {
     var store: StoreOf<AppTabViewFeature>
-    @EnvironmentObject private var coordinator: AppCoordinator
+    @State var tabViewCoordinator = TabViewCoordinator.shared
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            TabView(selection: viewStore.$selection) {
+            TabView(selection: $tabViewCoordinator.currentTab) {
                 
                 MatchedMeetingListView(
                     store: store.scope(

@@ -11,7 +11,8 @@ import Services
 import ComposableArchitecture
 
 struct LoginView: View {
-    @EnvironmentObject private var coordinator: AppCoordinator
+    @Dependency(\.coordinator) var coordinator
+//    @EnvironmentObject private var coordinator: AppCoordinator
     
     var body: some View {
         VStack {

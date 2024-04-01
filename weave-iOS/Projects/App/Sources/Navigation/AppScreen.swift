@@ -18,3 +18,17 @@ enum AppScreen: Codable, Hashable, Identifiable, CaseIterable {
     
     var id: AppScreen { self }
 }
+
+@Observable final class TabViewCoordinator {
+    public var currentTab: AppScreen
+    
+    static let shared: TabViewCoordinator = TabViewCoordinator()
+    
+    private init(currentTab: AppScreen = .home) {
+        self.currentTab = currentTab
+    }
+    
+    public func changeTab(to tab: AppScreen) {
+        currentTab = tab
+    }
+}

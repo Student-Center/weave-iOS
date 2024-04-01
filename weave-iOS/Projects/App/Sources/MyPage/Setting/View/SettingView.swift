@@ -10,7 +10,6 @@ import ComposableArchitecture
 import DesignSystem
 
 struct SettingView: View {
-    @EnvironmentObject private var coordinator: AppCoordinator
     let store: StoreOf<SettingFeautre>
     
     var body: some View {
@@ -50,7 +49,7 @@ struct SettingView: View {
                 primaryButtonTitle: "네, 할래요",
                 secondaryButtonTitle: "아니요",
                 primaryAction: {
-                    viewStore.send(.showLogoutAlert(model: coordinator))
+                    viewStore.send(.showLogoutAlert)
                 }
             )
             .weaveAlert(
@@ -60,7 +59,7 @@ struct SettingView: View {
                 primaryButtonTitle: "탈퇴할래요",
                 secondaryButtonTitle: "아니요",
                 primaryAction: {
-                    viewStore.send(.showUnregisterAlert(model: coordinator))
+                    viewStore.send(.showUnregisterAlert)
                 }
             )
         }

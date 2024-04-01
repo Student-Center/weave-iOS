@@ -232,7 +232,7 @@ fileprivate struct TeamNameInputView: View {
 #Preview {
     AppTabView(
         store: Store(
-            initialState: AppTabViewFeature.State(selection: .myTeam),
+            initialState: AppTabViewFeature.State(),
             reducer: {
                 AppTabViewFeature()
             }

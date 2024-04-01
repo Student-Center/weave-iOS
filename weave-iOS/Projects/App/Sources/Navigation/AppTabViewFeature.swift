@@ -10,9 +10,9 @@ import Services
 import ComposableArchitecture
 
 struct AppTabViewFeature: Reducer {
+    @Dependency(\.tabViewCoordinator) var tabViewCoordinator
+    
     struct State: Equatable {
-        @BindingState var selection: AppScreen = .home
-        
         @BindingState var isShowInvitationConfirmAlert = false
         
         var invitedTeamInfo: MeetingTeamInfoModel?
@@ -97,11 +97,16 @@ struct AppTabViewFeature: Reducer {
                 }
                 
             case .didSuccessEnterTeam:
-                state.selection = .myTeam
+                tabViewCoordinator.changeTab(to: .myTeam)
                 return .none
                 
             case .didTappedCancelInvitation:
                 state.invitedTeamInfo = nil
+                return .none
+                
+            case .myPage(.didSuccessedResign):
+                tabViewCoordinator.changeTab(to: .home)
+                // ToDo - 각 뷰 들의 데이터 초기화
                 return .none
             
             case .binding:
