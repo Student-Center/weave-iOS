@@ -93,11 +93,6 @@ struct AppTabView: View {
                 }
             }
             .tint(.white)
-            .onChange(of: appCoordinator.currentRoot, { oldValue, newValue in
-                if newValue == .loginView {
-                    print("로그인뷰로 이동, 초기화 필요")
-                }
-            })
             .onLoad {
                 viewStore.send(.onAppear)
             }
