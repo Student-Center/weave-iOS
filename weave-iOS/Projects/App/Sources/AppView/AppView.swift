@@ -30,7 +30,13 @@ struct AppView: View {
                     )
                 )
             case .loginView:
-                LoginView()
+                LoginView(
+                    store: Store(
+                        initialState: LoginFeature.State()
+                    ) {
+                        LoginFeature()
+                    }
+                )
             case .signUpView(let registToken):
                 SignUpView(
                     store: Store(
