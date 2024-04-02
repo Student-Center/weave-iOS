@@ -67,14 +67,10 @@ struct LoginView: View {
     }
     
     private func landingToSignUp(idToken: String) {
-        withAnimation {
-            coordinator.changeRoot(to: .signUpView(registToken: idToken))
-        }
+        coordinator.changeRoot(to: .signUpView(registToken: idToken))
     }
     
     private func landingToHomeView() {
-        withAnimation {
-            coordinator.changeRoot(to: .mainView)
-        }
+        coordinator.changeRoot(to: .mainView)
     }
 }

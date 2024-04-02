@@ -14,34 +14,38 @@ struct SettingView: View {
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
-            NavigationView {
-                VStack(spacing: 0) {
-                    // 1. 카테고리 순회
-                    
-                    ForEach(SettingCategoryTypes.allCases, id: \.self) { category in
-                        // 2. 카테고리 헤더 뷰 생성
-                        SettingSubViewHeaderView(headerTitle: category.headerTitle)
-                            // 3. 카테고리 내부 SubView 순회
-                            ForEach(0 ..< category.getSubViewTypes.count, id: \.self) { index in
-                                // 4. SubView 생성
-                                let viewType = category.getSubViewTypes[index]
-                                SettingSubSectionView(
-                                    index: index,
-                                    viewType: viewType
-                                )
-                                .onTapGesture {
-                                    viewStore.send(.didTappedSubViews(view: viewType))
-                                }
-                            }
-                            Spacer()
-                                .frame(height: 12)
+            VStack(spacing: 0) {
+                // 1. 카테고리 순회
+                
+                ForEach(SettingCategoryTypes.allCases, id: \.self) { category in
+                    // 2. 카테고리 헤더 뷰 생성
+                    SettingSubViewHeaderView(headerTitle: category.headerTitle)
+                    // 3. 카테고리 내부 SubView 순회
+                    ForEach(0 ..< category.getSubViewTypes.count, id: \.self) { index in
+                        // 4. SubView 생성
+                        let viewType = category.getSubViewTypes[index]
+                        SettingSubSectionView(
+                            index: index,
+                            viewType: viewType
+                        )
+                        .onTapGesture {
+                            viewStore.send(.didTappedSubViews(view: viewType))
+                        }
                     }
                     Spacer()
+                        .frame(height: 12)
                 }
-                .padding(.horizontal, 16)
+                Spacer(minLength: 200)
+                HStack {
+                    Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
+                    Text("최신버젼")
+                }
+                Spacer()
             }
+            .padding(.horizontal, 16)
             .navigationTitle("설정")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden()
             .weaveAlert(
                 isPresented: viewStore.$isShowLogoutAlert,
                 title: "로그아웃 하시겠어요?",
@@ -60,6 +64,16 @@ struct SettingView: View {
                 secondaryButtonTitle: "아니요",
                 primaryAction: {
                     viewStore.send(.showUnregisterAlert)
+                }
+            )
+            .weaveAlert(
+                isPresented: viewStore.$isShowPasteSuccessAlert,
+                title: "복사",
+                message: "조금만 있으면 새로운 기능들이 추가돼요!\n 한번 더 생각해보시는 건 어떠세요?",
+                primaryButtonTitle: "탈퇴할래요",
+                secondaryButtonTitle: "아니요",
+                primaryAction: {
+
                 }
             )
         }
@@ -99,9 +113,17 @@ struct SettingSubSectionView: View {
                     .font(.pretendard(._500, size: 16))
                 Spacer()
                 
-                Image(systemName: "chevron.right")
-                    .fontWeight(.semibold)
-                    .foregroundStyle(DesignSystem.Colors.textGray)
+                if viewType == .myID {
+                    Text("kakaoID")
+                        .foregroundStyle(DesignSystem.Colors.textGray)
+                    DesignSystem.Icons.copyID
+                        .fontWeight(.semibold)
+                        .foregroundStyle(DesignSystem.Colors.textGray)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(DesignSystem.Colors.textGray)
+                }
             }
             
         }

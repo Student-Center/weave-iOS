@@ -15,6 +15,7 @@ struct SettingFeautre: Reducer {
     struct State: Equatable {
         @BindingState var isShowLogoutAlert: Bool = false
         @BindingState var isShowUnregisterAlert: Bool = false
+        @BindingState var isShowPasteSuccessAlert: Bool = false
     }
     
     enum Action: BindableAction {
@@ -38,6 +39,9 @@ struct SettingFeautre: Reducer {
                     if let url = type.url {
                         UIApplication.shared.open(url)
                     }
+                case .myID:
+                    UIPasteboard.general.string = "kakaoID"
+                    state.isShowPasteSuccessAlert = true
                 case .logout:
                     state.isShowLogoutAlert = true
                 case .unregister:
