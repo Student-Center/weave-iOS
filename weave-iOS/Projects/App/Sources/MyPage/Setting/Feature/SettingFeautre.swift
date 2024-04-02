@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Services
 
 struct SettingFeautre: Reducer {
+    @Dependency(\.coordinator) var appCoordinator
     
     struct State: Equatable {
         @BindingState var isShowLogoutAlert: Bool = false
@@ -20,8 +21,9 @@ struct SettingFeautre: Reducer {
     enum Action: BindableAction {
         case inform
         case didTappedSubViews(view: SettingCategoryTypes.SettingSubViewTypes)
-        case showLogoutAlert(model: AppCoordinator)
-        case showUnregisterAlert(model: AppCoordinator)
+        case showLogoutAlert
+        case showUnregisterAlert
+        case resignSuccessed
         case binding(BindingAction<State>)
     }
     
@@ -38,7 +40,6 @@ struct SettingFeautre: Reducer {
                         UIApplication.shared.open(url)
                     }
                 case .myID:
-                    // TODO: kakaoID 복사
                     UIPasteboard.general.string = "kakaoID"
                     state.isShowPasteSuccessAlert = true
                 case .logout:
@@ -47,23 +48,31 @@ struct SettingFeautre: Reducer {
                     state.isShowUnregisterAlert = true
                 }
                 return .none
-            case .showLogoutAlert(let coordinator):
+            case .showLogoutAlert:
                 return .run { send in
                     try await requestLogout()
-                    resetLoginToken(with: coordinator)
+                    resetLoginToken()
+                    await send.callAsFunction(.resignSuccessed)
                 } catch: { error, send in
                     print(error)
-                    resetLoginToken(with: coordinator)
+                    resetLoginToken()
+                    await send.callAsFunction(.resignSuccessed)
                 }
                 
-            case .showUnregisterAlert(let coordinator):
+            case .showUnregisterAlert:
                 return .run { send in
                     try await requestUnregist()
-                    resetLoginToken(with: coordinator)
+                    resetLoginToken()
+                    await send.callAsFunction(.resignSuccessed)
                 } catch: { error, send in
                     print(error)
-                    resetLoginToken(with: coordinator)
+                    resetLoginToken()
+                    await send.callAsFunction(.resignSuccessed)
                 }
+                
+            case .resignSuccessed:
+                return .none
+                
             case .binding(_):
                 return .none
             }
@@ -82,11 +91,9 @@ struct SettingFeautre: Reducer {
         try await provider.requestWithNoResponse(with: endPoint)
     }
     
-    private func resetLoginToken(with coordinator: AppCoordinator) {
+    private func resetLoginToken() {
         UDManager.accessToken = ""
         UDManager.refreshToken = ""
-        Task {
-            await coordinator.changeRoot(to: .loginView)
-        }
+        appCoordinator.changeRoot(to: .loginView)
     }
 }

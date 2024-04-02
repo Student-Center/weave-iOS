@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct AppView: View {
-    @EnvironmentObject private var coordinator: AppCoordinator
+    @State private var coordinator = AppCoordinator.shared
     
     var body: some View {
         NavigationStack(path: $coordinator.paths) {
@@ -23,10 +23,8 @@ struct AppView: View {
                         }
                     )
                 )
-                .environmentObject(coordinator)
             case .loginView:
                 LoginView()
-                    .environmentObject(coordinator)
             case .signUpView(let registToken):
                 SignUpView(
                     store: Store(
@@ -37,7 +35,6 @@ struct AppView: View {
                         SignUpFeature()
                     }
                 )
-                .environmentObject(coordinator)
             }
         }
     }
@@ -46,9 +43,9 @@ struct AppView: View {
 
 
 
-@MainActor final class AppCoordinator: ObservableObject {
-    @Published var paths: [RootViewType] = []
-    @Published private(set) var currentRoot: RootViewType
+@Observable final class AppCoordinator: ObservableObject {
+    var paths: [RootViewType] = []
+    private(set) var currentRoot: RootViewType
     
     static let shared: AppCoordinator = AppCoordinator()
     

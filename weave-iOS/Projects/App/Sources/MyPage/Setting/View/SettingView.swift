@@ -10,7 +10,6 @@ import ComposableArchitecture
 import DesignSystem
 
 struct SettingView: View {
-    @EnvironmentObject private var coordinator: AppCoordinator
     let store: StoreOf<SettingFeautre>
     
     var body: some View {
@@ -55,7 +54,7 @@ struct SettingView: View {
                 primaryButtonTitle: "네, 할래요",
                 secondaryButtonTitle: "아니요",
                 primaryAction: {
-                    viewStore.send(.showLogoutAlert(model: coordinator))
+                    viewStore.send(.showLogoutAlert)
                 }
             )
             .weaveAlert(
@@ -65,7 +64,17 @@ struct SettingView: View {
                 primaryButtonTitle: "탈퇴할래요",
                 secondaryButtonTitle: "아니요",
                 primaryAction: {
-                    viewStore.send(.showUnregisterAlert(model: coordinator))
+                    viewStore.send(.showUnregisterAlert)
+                }
+            )
+            .weaveAlert(
+                isPresented: viewStore.$isShowPasteSuccessAlert,
+                title: "복사",
+                message: "조금만 있으면 새로운 기능들이 추가돼요!\n 한번 더 생각해보시는 건 어떠세요?",
+                primaryButtonTitle: "탈퇴할래요",
+                secondaryButtonTitle: "아니요",
+                primaryAction: {
+
                 }
             )
             // TODO: Weave Toast 추가

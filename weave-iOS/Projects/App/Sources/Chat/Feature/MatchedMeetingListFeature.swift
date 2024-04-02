@@ -10,6 +10,9 @@ import Services
 import ComposableArchitecture
 
 struct MatchedMeetingListFeature: Reducer {
+    
+    @Dependency(\.tabViewCoordinator) var tabViewCoordinator
+    
     struct State: Equatable {
         @BindingState var teamList = [MatchedMeetingTeamInfo]()
         var nextCallId: String?
@@ -25,7 +28,9 @@ struct MatchedMeetingListFeature: Reducer {
         //MARK: UserAction
         case onAppear
         case didTappedTeamView(team: MatchedMeetingTeamInfo)
+        case didTappedLookAroundMeetingList
         
+        case networkRequestError
         // destination
         case destination(PresentationAction<Destination.Action>)
         
@@ -59,8 +64,12 @@ struct MatchedMeetingListFeature: Reducer {
                     let response = try await requestMatchedTeamList(nextId: nil)
                     await send.callAsFunction(.fetchMeetingTeamList(response: response))
                 } catch: { error, send in
+                    await send.callAsFunction(.networkRequestError)
                     print(error)
                 }
+            case .networkRequestError:
+                state.isNetworkRequested = true
+                return .none
             case .fetchMeetingTeamList(let response):
                 state.isNetworkRequested = true
                 state.teamList.append(contentsOf: response.toDomain.items)
@@ -75,6 +84,10 @@ struct MatchedMeetingListFeature: Reducer {
                         partnerTeamModel: team.otherTeam
                     )
                 )
+                return .none
+                
+            case .didTappedLookAroundMeetingList:
+                tabViewCoordinator.changeTab(to: .home)
                 return .none
                 
             case .destination(.dismiss):

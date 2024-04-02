@@ -38,7 +38,7 @@ struct SignUpUniversityView: View {
                 
                 WeaveButton(
                     title: "다음으로",
-                    size: .medium,
+                    size: .large,
                     isEnabled: viewStore.selectedUniversity != nil
                 ) {
                     viewStore.send(
