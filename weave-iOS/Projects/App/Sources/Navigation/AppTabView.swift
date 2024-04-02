@@ -12,6 +12,7 @@ import Services
 
 struct AppTabView: View {
     var store: StoreOf<AppTabViewFeature>
+    @State var appCoordinator = AppCoordinator.shared
     @State var tabViewCoordinator = TabViewCoordinator.shared
     @State private var networkErrorManager = ServiceErrorManager.shared
     
@@ -92,6 +93,11 @@ struct AppTabView: View {
                 }
             }
             .tint(.white)
+            .onChange(of: appCoordinator.currentRoot, { oldValue, newValue in
+                if newValue == .loginView {
+                    print("로그인뷰로 이동, 초기화 필요")
+                }
+            })
             .onLoad {
                 viewStore.send(.onAppear)
             }
