@@ -12,7 +12,6 @@ import Services
 
 struct AppTabView: View {
     var store: StoreOf<AppTabViewFeature>
-    @State var appCoordinator = AppCoordinator.shared
     @State var tabViewCoordinator = TabViewCoordinator.shared
     @State private var networkErrorManager = ServiceErrorManager.shared
     
