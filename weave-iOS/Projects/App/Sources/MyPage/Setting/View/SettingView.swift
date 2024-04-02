@@ -37,7 +37,8 @@ struct SettingView: View {
                 }
                 Spacer(minLength: 200)
                 HStack {
-                    Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
+                    // TODO: 레이아웃 조정
+                    Text("Version \(appVersion())")
                     Text("최신버젼")
                 }
                 Spacer()
@@ -76,7 +77,12 @@ struct SettingView: View {
 
                 }
             )
+            // TODO: Weave Toast 추가
         }
+    }
+    
+    private func appVersion() -> String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 }
 
