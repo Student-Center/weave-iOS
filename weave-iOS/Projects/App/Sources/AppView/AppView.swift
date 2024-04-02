@@ -19,7 +19,14 @@ struct AppView: View {
         NavigationStack(path: $coordinator.paths) {
             switch coordinator.currentRoot {
             case .splash:
-                Text("스플래시")
+                SplashView(
+                    store: Store(
+                        initialState: SplashFeature.State(),
+                        reducer: {
+                            SplashFeature()
+                        }
+                    )
+                )
             case .mainView:
                 AppTabView(
                     store: Store(
