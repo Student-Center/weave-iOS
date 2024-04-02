@@ -7,6 +7,7 @@
 
 import Foundation
 import Services
+import CoreKit
 
 struct MyHeightEditRequestDTO: Encodable {
     let height: Int

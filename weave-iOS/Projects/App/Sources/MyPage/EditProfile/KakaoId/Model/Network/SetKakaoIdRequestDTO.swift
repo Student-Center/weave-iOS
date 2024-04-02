@@ -7,6 +7,7 @@
 
 import Foundation
 import Services
+import CoreKit
 
 fileprivate struct SetKakaoIdRequestDTO: Encodable {
     let kakaoId: String

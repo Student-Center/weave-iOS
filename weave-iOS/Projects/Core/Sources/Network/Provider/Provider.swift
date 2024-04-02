@@ -39,11 +39,13 @@ public class APIProvider {
                     
                     guard let response = try? JSONDecoder().decode(R.self, from: data) else {
                         completion(.failure(NetworkError.decodeError))
-                        ServiceErrorManager.shared.handleErrorResponse(
-                            data: data,
-                            response: response,
-                            needShowAlert: showErrorAlert
-                        )
+                        Task {
+                            try await ServiceErrorManager.shared.handleErrorResponse(
+                                data: data,
+                                response: response,
+                                needShowAlert: showErrorAlert
+                            )
+                        }
                         return
                     }
                     
@@ -57,50 +59,79 @@ public class APIProvider {
         }
     }
     
-    public func request<R: Decodable, E: RequestResponsable>(with endPoint: E, showErrorAlert: Bool = true) async throws -> R where E.Response == R {
-        do {
-            let urlRequest = try endPoint.getUrlRequest()
-            let (data, urlResponse) = try await session.data(for: urlRequest)
-            endPoint.responseLogger(response: urlResponse, data: data)
-            guard let response = urlResponse as? HTTPURLResponse,
-                  (200...399).contains(response.statusCode) else {
-                ServiceErrorManager.shared.handleErrorResponse(
-                    data: data,
-                    response: urlResponse,
-                    needShowAlert: showErrorAlert
-                )
-                throw NetworkError.unknownError // 또는 적절한 오류 처리
+    public func request<R: Decodable, E: RequestResponsable>(with endPoint: E, showErrorAlert: Bool = true, retry: RetryHandler? = nil) async throws -> R where E.Response == R {
+        var endPointObject = endPoint
+        
+        if let retry {
+            guard retry.count < 5 else { throw NetworkError.unknownError }
+            if let newToken = retry.newToken {
+                endPointObject.headers?["Authorization"] = "Bearer \(newToken)"
             }
-
+        }
+            
+        let urlRequest = try endPointObject.getUrlRequest()
+        let (data, urlResponse) = try await session.data(for: urlRequest)
+        endPointObject.responseLogger(response: urlResponse, data: data)
+        
+        if let response = urlResponse as? HTTPURLResponse,
+           (200...399).contains(response.statusCode) {
+            // 200 - 399 에 포함
             let decodedResponse = try JSONDecoder().decode(R.self, from: data)
             return decodedResponse
-        } catch {
-            throw NetworkError.urlRequest(error)
+        } else {
+            // 400 이상
+            let newToken = try await ServiceErrorManager.shared.handleErrorResponse(
+                data: data,
+                response: urlResponse,
+                needShowAlert: showErrorAlert
+            )
+            
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            
+            return try await request(
+                with: endPoint,
+                showErrorAlert: showErrorAlert,
+                retry: .init(count: (retry?.count) ?? 0 + 1, newToken: newToken)
+            )
         }
     }
     
-    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E, successCode: Int = 204, showErrorAlert: Bool = true) async throws {
-        do {
-            let urlRequest = try endPoint.getUrlRequest()
-            
-            let (data, urlResponse) = try await session.data(for: urlRequest)
-            endPoint.responseLogger(response: urlResponse, data: data)
-            guard let response = urlResponse as? HTTPURLResponse else {
-                throw NetworkError.unknownError
+    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E, successCode: Int = 204, showErrorAlert: Bool = true, retry: RetryHandler? = nil) async throws {
+        var endPointObject = endPoint
+        
+        if let retry {
+            guard retry.count < 5 else { throw NetworkError.unknownError }
+            if let newToken = retry.newToken {
+                endPointObject.headers?["Authorization"] = "Bearer \(newToken)"
             }
+        }
+        
+        let urlRequest = try endPoint.getUrlRequest()
+        
+        let (data, urlResponse) = try await session.data(for: urlRequest)
+        endPoint.responseLogger(response: urlResponse, data: data)
+        guard let response = urlResponse as? HTTPURLResponse else {
+            throw NetworkError.unknownError
+        }
+        
+        if response.statusCode == successCode {
+            return
+        } else {
+            // 400 이상
+            let newToken = try await ServiceErrorManager.shared.handleErrorResponse(
+                data: data,
+                response: urlResponse,
+                needShowAlert: showErrorAlert
+            )
             
-            if response.statusCode == successCode {
-                return
-            } else {
-                ServiceErrorManager.shared.handleErrorResponse(
-                    data: data,
-                    response: urlResponse,
-                    needShowAlert: showErrorAlert
-                )
-                throw NetworkError.invalidHttpStatusCode(response.statusCode)
-            }
-        } catch {
-            throw NetworkError.urlRequest(error)
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            
+            return try await requestWithNoResponse(
+                with: endPoint,
+                successCode: successCode,
+                showErrorAlert: showErrorAlert,
+                retry: .init(count: (retry?.count) ?? 0 + 1, newToken: newToken)
+            )
         }
     }
 }
@@ -120,7 +151,7 @@ extension APIProvider {
                     let decodedResponse = try JSONDecoder().decode(SignUpRegisterTokenResponse.self, from: data)
                     throw LoginNetworkError.needRegist(registerToken: decodedResponse)
                 }
-                ServiceErrorManager.shared.handleErrorResponse(
+                _ = try await ServiceErrorManager.shared.handleErrorResponse(
                     data: data,
                     response: urlResponse,
                     needShowAlert: showErrorAlert
@@ -144,7 +175,7 @@ extension APIProvider {
             endPoint.responseLogger(response: urlResponse, data: data)
             guard let response = urlResponse as? HTTPURLResponse,
                   (200...399).contains(response.statusCode) else {
-                ServiceErrorManager.shared.handleErrorResponse(
+                _ = try await ServiceErrorManager.shared.handleErrorResponse(
                     data: data,
                     response: urlResponse,
                     needShowAlert: showErrorAlert

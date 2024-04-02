@@ -8,6 +8,7 @@
 import Foundation
 import Services
 import DesignSystem
+import CoreKit
 
 struct MeetingTeamDetailResponseDTO: Codable {
     let id: String

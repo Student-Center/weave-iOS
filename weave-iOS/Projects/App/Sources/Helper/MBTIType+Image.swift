@@ -7,6 +7,7 @@
 
 import Foundation
 import DesignSystem
+import CoreKit
 
 extension MBTIType {
     public var mbtiProfileImage: String {

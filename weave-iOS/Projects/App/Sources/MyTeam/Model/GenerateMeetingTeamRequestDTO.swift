@@ -7,6 +7,7 @@
 
 import Foundation
 import Services
+import CoreKit
 
 struct GenerateMeetingTeamRequestDTO: Encodable {
     let teamIntroduce: String

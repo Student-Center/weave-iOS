@@ -9,6 +9,7 @@ import SwiftUI
 import DesignSystem
 import Services
 import ComposableArchitecture
+import CoreKit
 
 struct LoginView: View {
     @Dependency(\.coordinator) var coordinator

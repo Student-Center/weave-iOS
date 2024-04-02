@@ -9,6 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 import DesignSystem
 import Services
+import CoreKit
 
 struct SignUpFeature: Reducer {
     @Dependency(\.coordinator) var coordinator

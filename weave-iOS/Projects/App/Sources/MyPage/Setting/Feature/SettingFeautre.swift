@@ -8,6 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Services
+import CoreKit
 
 struct SettingFeautre: Reducer {
     @Dependency(\.coordinator) var appCoordinator

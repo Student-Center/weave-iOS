@@ -7,6 +7,7 @@
 
 import Foundation
 import Services
+import CoreKit
 
 struct MyUserInfoResponseDTO: Decodable {
     let id: String

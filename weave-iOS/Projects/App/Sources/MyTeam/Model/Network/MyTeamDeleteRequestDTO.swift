@@ -7,6 +7,7 @@
 
 import Foundation
 import Services
+import CoreKit
 
 extension APIEndpoints {
     static func deleteMyTeam(teamId: String) -> EndPoint<MyTeamListResponseDTO> {

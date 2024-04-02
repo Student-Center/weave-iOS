@@ -59,10 +59,11 @@ struct AppTabViewFeature: Reducer {
                 }
                 
             case .requestMyUserInfo:
-                return .run { send in
-                    let userInfo = try await requestMyUserInfo()
-                    await send.callAsFunction(.fetchMyUserInfo(userInfo: userInfo))
-                }
+                return .none
+//                return .run { send in
+//                    let userInfo = try await requestMyUserInfo()
+//                    await send.callAsFunction(.fetchMyUserInfo(userInfo: userInfo))
+//                }
                 
             case .fetchMyUserInfo(let userInfo):
                 UserInfo.myInfo = userInfo.toDomain

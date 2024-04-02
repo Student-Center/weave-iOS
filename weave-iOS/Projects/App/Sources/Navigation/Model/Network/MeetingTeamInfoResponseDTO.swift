@@ -7,6 +7,7 @@
 
 import Services
 import Foundation
+import CoreKit
 
 struct MeetingTeamInfoResponseDTO: Decodable {
     let teamId: String

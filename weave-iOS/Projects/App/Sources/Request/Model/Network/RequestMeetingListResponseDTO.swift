@@ -8,6 +8,7 @@
 import Foundation
 import Services
 import DesignSystem
+import CoreKit
 
 struct RequestMeetingListResponseDTO: Codable {
     let items: [RequestMeetingItemResponseDTO]

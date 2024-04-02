@@ -25,16 +25,16 @@ public struct UDWrapper<T> {
 
 public enum UDManager {
     @UDWrapper(key: CommonKey.AccessToken, defaultValue: "")
-    static var accessToken: String
+    public static var accessToken: String
     
     @UDWrapper(key: CommonKey.RefreshToken, defaultValue: "")
-    static var refreshToken: String
+    public static var refreshToken: String
 }
 
-extension UDManager {
+public extension UDManager {
     static var isLogin: Bool {
-        print("accessToken: \(UDManager.accessToken)")
-        print("refreshToken: \(UDManager.refreshToken)")
+        print("✅ accessToken: \(UDManager.accessToken)")
+        print("✅ refreshToken: \(UDManager.refreshToken)")
         return !UDManager.accessToken.isEmpty && !UDManager.refreshToken.isEmpty
     }
 }
