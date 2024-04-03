@@ -30,7 +30,6 @@ struct AppTabViewFeature: Reducer {
         case binding(BindingAction<State>)
         case onAppear
         
-        case requestMyUserInfo
         case fetchMyUserInfo(userInfo: MyUserInfoResponseDTO)
         
         // App Scheme Action
@@ -54,16 +53,7 @@ struct AppTabViewFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                return .run { send in
-                    await send.callAsFunction(.requestMyUserInfo)
-                }
-                
-            case .requestMyUserInfo:
                 return .none
-//                return .run { send in
-//                    let userInfo = try await requestMyUserInfo()
-//                    await send.callAsFunction(.fetchMyUserInfo(userInfo: userInfo))
-//                }
                 
             case .fetchMyUserInfo(let userInfo):
                 UserInfo.myInfo = userInfo.toDomain
@@ -105,11 +95,6 @@ struct AppTabViewFeature: Reducer {
                 state.invitedTeamInfo = nil
                 return .none
                 
-            case .myPage(.didSuccessedResign):
-                tabViewCoordinator.changeTab(to: .home)
-                // ToDo - 각 뷰 들의 데이터 초기화
-                return .none
-                
             case .meetingTeamList(.pushToUnivVerifyView):
                 state.myPage.myUserInfo = UserInfo.myInfo
                 return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
@@ -138,14 +123,7 @@ struct AppTabViewFeature: Reducer {
         }
 
     }
-    
-    func requestMyUserInfo() async throws -> MyUserInfoResponseDTO {
-        let endPoint = APIEndpoints.getMyUserInfo()
-        let provider = APIProvider(session: URLSession.shared)
-        let response = try await provider.request(with: endPoint)
-        return response
-    }
-    
+
     func requestInvitedTeamInfo(invitationCode: String) async throws -> MeetingTeamInfoResponseDTO {
         let endPoint = APIEndpoints.getMeetingTeamInfo(invitationCode: invitationCode)
         let provider = APIProvider()

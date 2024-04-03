@@ -12,48 +12,64 @@ import ComposableArchitecture
 import CoreKit
 
 struct AppView: View {
+
+    let store: StoreOf<AppViewFeature>
+    
     @ObservedObject private var coordinator = AppCoordinator.shared
     @State private var networkErrorManager = ServiceErrorManager.shared
     
     var body: some View {
-        NavigationStack(path: $coordinator.paths) {
-            switch coordinator.currentRoot {
-            case .splash:
-                SplashView(
-                    store: Store(
-                        initialState: SplashFeature.State(),
-                        reducer: {
-                            SplashFeature()
-                        }
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            NavigationStack(path: $coordinator.paths) {
+                IfLetStore(
+                    store.scope(
+                        state: \.splashState,
+                        action: { .splashAction( $0 ) }
                     )
-                )
-            case .mainView:
-                AppTabView(
-                    store: Store(
-                        initialState: AppTabViewFeature.State(),
-                        reducer: {
-                            AppTabViewFeature()
-                        }
+                ) { subStore in
+                    SplashView(store: subStore)
+                }
+                
+                IfLetStore(
+                    store.scope(
+                        state: \.mainState,
+                        action: { .mainAction( $0 ) }
                     )
-                )
-            case .loginView:
-                LoginView(
-                    store: Store(
-                        initialState: LoginFeature.State()
-                    ) {
-                        LoginFeature()
+                ) { subStore in
+                    AppTabView(store: subStore)
+                }
+                
+                IfLetStore(
+                    store.scope(
+                        state: \.loginState,
+                        action: { .loginAction( $0 ) }
+                    )
+                ) { subStore in
+                    LoginView(store: subStore)
+                }
+                
+                IfLetStore(
+                    store.scope(
+                        state: \.signUpState,
+                        action: { .signUpAction( $0 ) }
+                    )
+                ) { subStore in
+                    SignUpView(store: subStore)
+                }
+                .onReceive(NotificationManager.publisher(.splash)) { _ in
+                    store.send(.changeRoot(.splash))
+                }
+                .onReceive(NotificationManager.publisher(.main)) { _ in
+                    store.send(.changeRoot(.mainView))
+                }
+                .onReceive(NotificationManager.publisher(.login)) { _ in
+                    store.send(.changeRoot(.loginView))
+                }
+                .onReceive(NotificationManager.publisher(.signUp)) { hashable in
+                    if let registToken = hashable?["registToken"] as? String {
+                        store.send(.changeRoot(.signUpView(registToken: registToken)))
                     }
-                )
-            case .signUpView(let registToken):
-                SignUpView(
-                    store: Store(
-                        initialState: SignUpFeature.State(
-                            registerToken: registToken
-                        )
-                    ) {
-                        SignUpFeature()
-                    }
-                )
+                }
             }
         }
     }
@@ -77,7 +93,21 @@ struct AppView: View {
     
     public func changeRoot(to viewType: RootViewType) {
         withAnimation {
+            print(paths.count)
+            if paths.count > 1 {
+                paths.removeLast()
+            }
             currentRoot = viewType
+            switch viewType {
+            case .splash:
+                NotificationManager.post(.splash)
+            case .mainView:
+                NotificationManager.post(.main)
+            case .loginView:
+                NotificationManager.post(.login)
+            case .signUpView(let registToken):
+                NotificationManager.post(.signUp, userInfo: ["registToken": registToken])
+            }
         }
     }
     
@@ -104,7 +134,7 @@ struct AppView: View {
             do {
                 let endPoint = APIEndpoints.getMyUserInfo()
                 let provider = APIProvider(session: URLSession.shared)
-                let userInfo = try await provider.request(with: endPoint)
+                let userInfo = try await provider.request(with: endPoint, showErrorAlert: false)
                 UserInfo.myInfo = userInfo.toDomain
                 changeRoot(to: .mainView)
             } catch {
@@ -123,3 +153,42 @@ struct AppView: View {
         }
     }
 }
+
+//switch coordinator.currentRoot {
+//case .splash:
+//    SplashView(
+//        store: Store(
+//            initialState: SplashFeature.State(),
+//            reducer: {
+//                SplashFeature()
+//            }
+//        )
+//    )
+//case .mainView:
+//    AppTabView(
+//        store: Store(
+//            initialState: AppTabViewFeature.State(),
+//            reducer: {
+//                AppTabViewFeature()
+//            }
+//        )
+//    )
+//case .loginView:
+//    LoginView(
+//        store: Store(
+//            initialState: LoginFeature.State()
+//        ) {
+//            LoginFeature()
+//        }
+//    )
+//case .signUpView(let registToken):
+//    SignUpView(
+//        store: Store(
+//            initialState: SignUpFeature.State(
+//                registerToken: registToken
+//            )
+//        ) {
+//            SignUpFeature()
+//        }
+//    )
+//}

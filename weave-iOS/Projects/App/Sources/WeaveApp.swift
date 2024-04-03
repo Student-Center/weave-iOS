@@ -13,22 +13,25 @@ import KakaoSDKUser
 
 @main
 struct WeaveApp: App {
-    @StateObject private var coordinator: AppCoordinator = AppCoordinator.shared
+    
+    let store: StoreOf<AppViewFeature>
     
     init() {
+        self.store = .init(initialState: AppViewFeature.State(), reducer: {
+            AppViewFeature()
+        })
         // Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: SecretKey.kakaoNativeKey)
     }
     
     var body: some Scene {
         WindowGroup {
-            AppView()
+            AppView(store: store)
                 .onOpenURL(perform: { url in
                     if (AuthApi.isKakaoTalkLoginUrl(url)) {
                         AuthController.handleOpenUrl(url: url)
                     }
                 })
         }
-        .environmentObject(coordinator)
     }
 }

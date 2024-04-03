@@ -95,6 +95,5 @@ struct SettingFeautre: Reducer {
     private func resetLoginToken() {
         UDManager.accessToken = ""
         UDManager.refreshToken = ""
-        appCoordinator.changeRoot(to: .loginView)
     }
 }
