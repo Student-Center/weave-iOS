@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DesignSystem
 import ComposableArchitecture
 
 struct SplashView: View {
@@ -13,7 +14,16 @@ struct SplashView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            Text("스플래시뷰")
+            DesignSystem.Icons.splashLogo
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding(.horizontal, 80)
         }
     }
+}
+
+#Preview {
+    SplashView(store: .init(initialState: SplashFeature.State(), reducer: {
+        SplashFeature()
+    }))
 }

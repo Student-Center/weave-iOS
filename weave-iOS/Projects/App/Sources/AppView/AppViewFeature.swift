@@ -33,37 +33,31 @@ struct AppViewFeature: Reducer {
             case .changeRoot(let type):
                 switch type {
                 case .splash:
-                    withAnimation {
-                        state.splashState = .init()
-                        state.mainState = nil
-                        state.loginState = nil
-                        state.signUpState = nil
-                    }
+                    state.splashState = .init()
+                    state.mainState = nil
+                    state.loginState = nil
+                    state.signUpState = nil
                 case .mainView:
-                    withAnimation {
-                        state.splashState = nil
-                        state.mainState = .init()
-                        state.loginState = nil
-                        state.signUpState = nil
-                    }
+                    state.splashState = nil
+                    state.mainState = .init()
+                    state.loginState = nil
+                    state.signUpState = nil
                 case .loginView:
-                    withAnimation {
-                        state.splashState = nil
-                        state.mainState = nil
-                        state.loginState = .init()
-                        state.signUpState = nil
-                    }
+                    state.splashState = nil
+                    state.mainState = nil
+                    state.loginState = .init()
+                    state.signUpState = nil
                 case .signUpView(let registerToken):
-                    withAnimation {
-                        state.splashState = nil
-                        state.mainState = nil
-                        state.loginState = nil
-                        state.signUpState = .init(registerToken: registerToken)
-                    }
+                    state.splashState = nil
+                    state.mainState = nil
+                    state.loginState = nil
+                    state.signUpState = .init(registerToken: registerToken)
                 }
+                
             default:
                 break
             }
+            
             return .none
         }
         .ifLet(\.splashState, action: /Action.splashAction) {
