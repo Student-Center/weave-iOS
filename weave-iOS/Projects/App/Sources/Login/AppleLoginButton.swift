@@ -44,7 +44,8 @@ struct AppleLoginButton: View {
                 print("Authorisation failed: \(error.localizedDescription)")
             }
         }
-        .frame(width: 300, height: 44, alignment: .center)
+        .padding(.horizontal, 47)
+        .frame(height: 44, alignment: .center)
         .signInWithAppleButtonStyle(.whiteOutline)
     }
     

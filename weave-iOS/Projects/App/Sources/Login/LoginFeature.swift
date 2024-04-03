@@ -46,20 +46,11 @@ struct LoginFeature: Reducer {
                 UDManager.refreshToken = provider.refreshToken
                 appCoordinator.changeRoot(to: .mainView)
             } catch {
-                print(error)
-                // 에러로 전달 되는 회원가입 DTO 객체 처리
-                if let networkError = error as? NetworkError {
-                    switch networkError {
-                    case .urlRequest(let innerError):
-                        if let loginError = innerError as? LoginNetworkError {
-                            switch loginError {
-                            case .needRegist(let registerTokenResponse):
-                                appCoordinator.changeRoot(to: .signUpView(registToken: registerTokenResponse.registerToken))
-                                return
-                            }
-                        }
-                    default: break
-                    }
+                switch error as? LoginNetworkError {
+                case .needRegist(let registerTokenResponse):
+                    appCoordinator.changeRoot(to: .signUpView(registToken: registerTokenResponse.registerToken))
+                case .none:
+                    return
                 }
             }
         }

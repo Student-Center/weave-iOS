@@ -28,6 +28,7 @@ import Services
             NotificationManager.post(.main)
         case .loginView:
             NotificationManager.post(.login)
+            TabViewCoordinator.shared.changeTab(to: .home)
         case .signUpView(let registToken):
             NotificationManager.post(.signUp, userInfo: ["registToken": registToken])
         }

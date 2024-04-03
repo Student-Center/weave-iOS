@@ -14,7 +14,7 @@ struct AppTabViewFeature: Reducer {
     
     struct State: Equatable {
         @BindingState var isShowInvitationConfirmAlert = false
-        
+        @BindingState var isShowWelcomeAlert = false
         var invitedTeamInfo: MeetingTeamInfoModel?
         
         // Tap SubView States

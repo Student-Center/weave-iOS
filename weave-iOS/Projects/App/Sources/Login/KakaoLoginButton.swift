@@ -23,14 +23,19 @@ struct KakaoLoginButton: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 5)
                     .foregroundStyle(Color(red: 1, green: 0.9, blue: 0))
-                HStack {
+                HStack(spacing: 0) {
                     DesignSystem.Icons.kakaoLogo
+                        .resizable()
+                        .aspectRatio(1.0, contentMode: .fit)
+                        .padding(.all, 13)
                     Text("카카오 로그인")
+                        .font(.pretendard(._600, size: 15))
                 }
             }
             .foregroundStyle(.black)
         })
-        .frame(width: 300, height: 44, alignment: .center)
+        .padding(.horizontal, 47)
+        .frame(height: 44, alignment: .center)
     }
     
     private func isAvailableOpenKakao() {
@@ -47,5 +52,11 @@ struct KakaoLoginButton: View {
                 }
             }
         }
+    }
+}
+
+#Preview {
+    KakaoLoginButton { _ in
+        
     }
 }

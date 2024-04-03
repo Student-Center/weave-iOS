@@ -25,6 +25,8 @@ struct AppViewFeature: Reducer {
         case mainAction(AppTabViewFeature.Action)
         case loginAction(LoginFeature.Action)
         case signUpAction(SignUpFeature.Action)
+        
+        case showWelcomeAlert
     }
     
     var body: some ReducerOf<Self> {
@@ -53,6 +55,17 @@ struct AppViewFeature: Reducer {
                     state.loginState = nil
                     state.signUpState = .init(registerToken: registerToken)
                 }
+                
+            case .signUpAction(.didCompleteSignUp):
+                return .run { send in
+                    await send.callAsFunction(.changeRoot(.mainView), animation: .default)
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                    await send.callAsFunction(.showWelcomeAlert)
+                }
+                
+            case .showWelcomeAlert:
+                state.mainState?.isShowWelcomeAlert = true
+                return .none
                 
             default:
                 break

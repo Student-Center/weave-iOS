@@ -122,6 +122,16 @@ struct AppTabView: View {
                     viewStore.send(.didTappedCancelInvitation)
                 }
             )
+            .weaveAlert(
+                isPresented: viewStore.$isShowWelcomeAlert,
+                title: "🥳\n회원가입 완료",
+                message: "WEAVE에 오신 걸 환영해요!\n그럼 바로 미팅 프로필을\n작성하러 가볼까요?",
+                primaryButtonTitle: "네, 좋아요",
+                secondaryButtonTitle: "나중에", 
+                primaryAction: {
+                    tabViewCoordinator.changeTab(to: .myPage)
+                }
+            )
             .weaveErrorMessage(
                 isPresented: $networkErrorManager.needShowErrorAlert,
                 message: networkErrorManager.errorMessage

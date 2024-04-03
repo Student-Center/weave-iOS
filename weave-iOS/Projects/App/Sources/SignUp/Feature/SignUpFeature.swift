@@ -17,7 +17,7 @@ struct SignUpFeature: Reducer {
     struct State: Equatable {
         let registerToken: String
         // 현단계 상태값
-        var currentStep: SignUpStepTypes = .agreement
+        var currentStep: SignUpStepTypes = .gender
         // 성별
         var selectedGender: GenderTypes?
         // 나이
@@ -205,7 +205,6 @@ struct SignUpFeature: Reducer {
                 return .none
                 
             case .didCompleteSignUp:
-                coordinator.changeRoot(to: .mainView)
                 return .none
                 
             case .dismissSignUp:

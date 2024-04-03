@@ -47,3 +47,9 @@ struct LoginView: View {
         }
     }
 }
+
+#Preview {
+    LoginView(store: .init(initialState: LoginFeature.State(), reducer: {
+        LoginFeature()
+    }))
+}
