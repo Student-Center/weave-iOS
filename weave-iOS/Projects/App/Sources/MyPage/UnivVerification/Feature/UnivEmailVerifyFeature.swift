@@ -45,6 +45,7 @@ struct UnivEmailVerifyFeature: Reducer {
             case .didTappedVerifyButton:
                 return .run { [email = state.userEmail, code = state.verifyCode] send in
                     try await requestVerifyCode(email: email, code: code)
+                    await send.callAsFunction(.didSuccessedVerifyEmail)
                 } catch: { error, send in
                     await send.callAsFunction(.fetchErrorMessage)
                 }

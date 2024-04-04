@@ -50,7 +50,7 @@ struct UnivEmailInputFeature: Reducer {
                 } catch: { error, send in
                     print(error)
                     // 이메일 전송 에러처리
-                    await send.callAsFunction(.showSendErrorAlert)
+//                    await send.callAsFunction(.showSendErrorAlert)
                 }
                 
             case .requestUniversityInfo:
