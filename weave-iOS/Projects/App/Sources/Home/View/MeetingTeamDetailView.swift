@@ -242,7 +242,7 @@ struct TeamChemistryView: View {
     func getChemiDescriptionString(score: Int) -> String {
         
         var description: String = ""
-        
+        let score = score * 20
         if score >= 0 && score <= 40 {
             description = "열린 마음이 필요해요"
         } else if score >= 41 && score <= 60 {
