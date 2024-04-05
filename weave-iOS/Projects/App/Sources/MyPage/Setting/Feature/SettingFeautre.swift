@@ -21,6 +21,7 @@ struct SettingFeautre: Reducer {
     
     enum Action: BindableAction {
         case inform
+        case didTappedDismiss
         case didTappedSubViews(view: SettingCategoryTypes.SettingSubViewTypes)
         case showLogoutAlert
         case showUnregisterAlert
@@ -72,6 +73,9 @@ struct SettingFeautre: Reducer {
                 }
                 
             case .resignSuccessed:
+                return .none
+                
+            case .didTappedDismiss:
                 return .none
                 
             case .binding(_):
