@@ -19,6 +19,8 @@ struct UnivEmailInputFeature: Reducer {
         @BindingState var isShowEmailSendAlert = false
         @BindingState var isShowEmailSendErrorAlert = false
         
+        var isNetworkRequested = false
+        
         @PresentationState var destination: Destination.State?
     }
     
@@ -31,6 +33,8 @@ struct UnivEmailInputFeature: Reducer {
         case pushNextView
         case binding(BindingAction<State>)
         
+        case changeEmailRequestFlag
+        
         case didCompleteVerifyEmail
         
         case destination(PresentationAction<Destination.Action>)
@@ -42,15 +46,18 @@ struct UnivEmailInputFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .requestSendVerifyEmail:
+                // 중복 요청 방지
+                guard state.isNetworkRequested == false else {
+                    return .none
+                }
                 return .run { [emailPrefix = state.emailPrefix, univInfo = state.universityInfo] send in
+                    await send.callAsFunction(.changeEmailRequestFlag)
                     try await requestSendVerificationEmail(
                         email: emailPrefix + "@" + (univInfo?.domainAddress ?? "")
                     )
                     await send.callAsFunction(.didCompleteSendEmail)
                 } catch: { error, send in
-                    print(error)
-                    // 이메일 전송 에러처리
-//                    await send.callAsFunction(.showSendErrorAlert)
+                    await send.callAsFunction(.changeEmailRequestFlag)
                 }
                 
             case .requestUniversityInfo:
@@ -60,6 +67,10 @@ struct UnivEmailInputFeature: Reducer {
                 } catch: { error, send in
                     print(error)
                 }
+                
+            case .changeEmailRequestFlag:
+                state.isNetworkRequested.toggle()
+                return .none
                 
             case .fetchUniversityInfo(let dto):
                 state.universityInfo = dto.toDomain
@@ -71,7 +82,7 @@ struct UnivEmailInputFeature: Reducer {
                 
             case .didCompleteSendEmail:
                 state.isShowEmailSendAlert.toggle()
-                return .none
+                return .send(.changeEmailRequestFlag)
                 
             case .pushNextView:
                 guard let univDomain = state.universityInfo?.domainAddress else { return .none }
