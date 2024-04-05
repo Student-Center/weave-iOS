@@ -46,7 +46,21 @@ extension Requestable {
         
         if let queryParameters = queryParameters,
             let dictionary = try queryParameters.toDictionary() {
-            let queryItems = dictionary.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
+            
+            var queryItems: [URLQueryItem] = []
+            
+            for (key, value) in dictionary {
+                // 쿼리 데이터 배열 처리
+                if let arrayValue = value as? [String] {
+                    for item in arrayValue {
+                        queryItems.append(URLQueryItem(name: key, value: item))
+                    }
+                } else {
+                    // 배열 아닌 경우
+                    queryItems.append(URLQueryItem(name: key, value: "\(value)"))
+                }
+            }
+            
             urlComponents.queryItems = queryItems
         }
         

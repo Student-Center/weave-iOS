@@ -49,7 +49,7 @@ struct MeetingTeamListFilterView: View {
                                 .font(.pretendard(._500, size: 16))
                             Spacer()
                             Text(
-                                "\(String(String(viewStore.lowYear).suffix(2)))년생 ~ \(String(String(viewStore.highYear).suffix(2)))년생"
+                                "\(String(String(viewStore.selectedLowYear).suffix(2)))년생 ~ \(String(String(viewStore.selectedHighYear).suffix(2)))년생"
                             )
                                 .font(.pretendard(._500, size: 16))
                                 .foregroundStyle(DesignSystem.Colors.defaultBlue)
@@ -116,8 +116,24 @@ struct MeetingTeamListFilterView: View {
             .background(DesignSystem.Colors.darkGray)
             .onAppear {
                 viewStore.send(.requestMeetingLocationList)
+                // 인원수
                 if let selectedCount = viewStore.filterModel.memberCount {
                     selectedMeetingCount = MeetingMemberCountType(rawValue: selectedCount)
+                }
+            }
+            .onChange(of: viewStore.isLocationFetched) { oldValue, newValue in
+                // Location 정보를 받았을 때
+                // 이미 필터에 가지고 있던 Location 정보가 있을 때
+                if let locations = viewStore.filterModel.preferredLocations {
+                    if let matchedIndex = viewStore.locationList.firstIndex(where: { $0.name == locations.first }) {
+                        let matchedModel = viewStore.locationList[matchedIndex]
+                        if matchedModel.isCapitalArea {
+                            self.locationFilterType = MeetingLocationFilterType.capital
+                        } else {
+                            self.locationFilterType = MeetingLocationFilterType.nonCapital
+                        }
+                        self.selectedLocation = matchedModel
+                    }
                 }
             }
         }

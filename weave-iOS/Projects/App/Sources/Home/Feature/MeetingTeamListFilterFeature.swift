@@ -21,19 +21,24 @@ struct MeetingTeamListFilterFeature: Reducer {
         @BindingState var locationList: [MeetingLocationModel]
         
         // 나이대 슬라이더
+        let lowYear = 1996
+        let highYear = 2006
         @BindingState var lowValue = 0.0
         @BindingState var highValue = 1.0
+        @BindingState var selectedLowYear: Int
+        @BindingState var selectedHighYear: Int
         
-        @BindingState var lowYear = 1996
-        @BindingState var highYear = 2006
+        @BindingState var filterModel: MeetingTeamFilterModel
         
-        var filterModel: MeetingTeamFilterModel
+        @BindingState var isLocationFetched = false
         
         init(
             filterModel: MeetingTeamFilterModel = MeetingTeamFilterModel()
         ) {
             self.locationList = []
             self.filterModel = filterModel
+            self.selectedLowYear = filterModel.oldestMemberBirthYear
+            self.selectedHighYear = filterModel.youngestMemberBirthYear
         }
     }
     
@@ -44,6 +49,7 @@ struct MeetingTeamListFilterFeature: Reducer {
         case didTappedSaveButton(input: FilterInputs)
         
         // range
+        case setRangeData
         case sliderLowValueChanged(value: Double)
         case sliderHighValueChanged(value: Double)
         
@@ -63,10 +69,12 @@ struct MeetingTeamListFilterFeature: Reducer {
                 return .run { send in
                     let locationList = try await requestDetailTeamInfo()
                     await send.callAsFunction(.fetchMeetingLocationList(list: locationList))
+                    await send.callAsFunction(.setRangeData)
                 }
                 
             case .fetchMeetingLocationList(let list):
                 state.locationList = list.toDomain
+                state.isLocationFetched = true
                 return .none
                 
             case .didTappedSaveButton(let input):
@@ -75,26 +83,50 @@ struct MeetingTeamListFilterFeature: Reducer {
                 if let region = input.regions {
                     filter.preferredLocations = [region.name]
                 }
-                filter.oldestMemberBirthYear = state.lowYear
-                filter.youngestMemberBirthYear = state.highYear
+                filter.oldestMemberBirthYear = state.selectedLowYear
+                filter.youngestMemberBirthYear = state.selectedHighYear
                 state.filterModel = filter
-                return .run { send in
-                    await send.callAsFunction(.dismissSaveFilter)
-                }
+                return .send(.dismissSaveFilter)
                 
             case .dismissSaveFilter:
                 return .run { send in
                     await dismiss()
                 }
                 
+            case .setRangeData:
+                if let lowYearValue = yearToRangeValue(
+                    lowYear: state.lowYear,
+                    highYear: state.highYear,
+                    year: state.filterModel.oldestMemberBirthYear
+                ) {
+                    state.lowValue = lowYearValue
+                }
+                
+                if let highYearValue = yearToRangeValue(
+                    lowYear: state.lowYear,
+                    highYear: state.highYear,
+                    year: state.filterModel.youngestMemberBirthYear
+                ) {
+                    state.highValue = highYearValue
+                }
+                return .none
+                
             case .sliderLowValueChanged(let value):
-                let lowYear = rangeValueToYear(input: value)
-                state.lowYear = lowYear
+                let lowYear = rangeValueToYear(
+                    lowYear: state.lowYear,
+                    highYear: state.highYear,
+                    input: value
+                )
+                state.selectedLowYear = lowYear
                 return .none
                 
             case .sliderHighValueChanged(let value):
-                let highYear = rangeValueToYear(input: value)
-                state.highYear = highYear
+                let highYear = rangeValueToYear(
+                    lowYear: state.lowYear,
+                    highYear: state.highYear,
+                    input: value
+                )
+                state.selectedHighYear = highYear
                 return .none
                 
             case .dismiss:
@@ -107,15 +139,28 @@ struct MeetingTeamListFilterFeature: Reducer {
         }
     }
     
-    func rangeValueToYear(input: Double) -> Int {
-        let minYear = 1996
-        let maxYear = 2006
+    func rangeValueToYear(lowYear: Int, highYear: Int, input: Double) -> Int {
+        let minYear = lowYear
+        let maxYear = highYear
         let range = maxYear - minYear
         let transformed = (input * Double(range)) + Double(minYear)
         let year = Int(round(transformed))
         return year
     }
     
+    func yearToRangeValue(lowYear: Int, highYear: Int, year: Int) -> Double? {
+        let minYear = lowYear
+        let maxYear = highYear
+        let range = maxYear - minYear
+        
+        guard year >= minYear && year <= maxYear else {
+            return nil
+        }
+        
+        let normalizedYear = Double(year - minYear) / Double(range)
+        return normalizedYear
+    }
+
     func requestDetailTeamInfo() async throws -> MeetingLocationListResponseDTO {
         let endPoint = APIEndpoints.getMeetingLocationList()
         let provider = APIProvider()
