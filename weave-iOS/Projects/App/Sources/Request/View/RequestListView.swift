@@ -9,6 +9,7 @@ import SwiftUI
 import DesignSystem
 import ComposableArchitecture
 import CoreKit
+import Kingfisher
 
 struct RequestListView: View {
     @State var selection: Int = 0
@@ -203,15 +204,25 @@ struct MemberIconView<Content: View>: View {
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .inset(by: 1)
-                    .stroke(.white, lineWidth: isStroke ? 1 : 0)
-                    .foregroundStyle(DesignSystem.Colors.lightGray)
-                    .background(DesignSystem.Colors.lightGray)
-                    .overlay(content: {
-                        overlay()
-                    })
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                if let imageURL {
+                    KFImage(URL(string: imageURL))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: 12)
+                        )
+                        .frame(width: 48, height: 48)
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .inset(by: 1)
+                        .stroke(.white, lineWidth: isStroke ? 1 : 0)
+                        .foregroundStyle(DesignSystem.Colors.lightGray)
+                        .background(DesignSystem.Colors.lightGray)
+                        .overlay(content: {
+                            overlay()
+                        })
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
             }
             .frame(width: 48, height: 48)
             .frame(maxWidth: .infinity)
