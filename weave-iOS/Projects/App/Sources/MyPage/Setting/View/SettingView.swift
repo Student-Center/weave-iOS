@@ -35,13 +35,19 @@ struct SettingView: View {
                     Spacer()
                         .frame(height: 12)
                 }
-                Spacer(minLength: 200)
-                HStack {
-                    // TODO: 레이아웃 조정
-                    Text("Version \(appVersion())")
-                    Text("최신버젼")
-                }
+                
                 Spacer()
+                
+                HStack(spacing: 10) {
+                    Text("Ver \(appVersion())")
+                        .font(.pretendard(._500, size: 14))
+                        .foregroundStyle(DesignSystem.Colors.gray400)
+                    Text("최신 버젼")
+                        .font(.pretendard(._600, size: 12))
+                        .foregroundStyle(DesignSystem.Colors.gray600)
+                }
+                .frame(height: 40)
+                .padding(.bottom, 60)
             }
             .padding(.horizontal, 16)
             .navigationTitle("설정")
