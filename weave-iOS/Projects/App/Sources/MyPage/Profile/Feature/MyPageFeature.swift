@@ -142,6 +142,10 @@ struct MyPageFeature: Reducer {
                 appCoordinator.changeRoot(to: .loginView)
                 return .none
                 
+            case .destination(.presented(.presentSetting(.didTappedDismiss))):
+                state.destination = nil
+                return .none
+                
             case .showPhotoPicker:
                 state.isShowPhotoPicker.toggle()
                 return .none
