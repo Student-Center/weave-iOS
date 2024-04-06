@@ -184,6 +184,7 @@ struct MemberIconView<Content: View>: View {
     let title: String
     let subTitle: String
     let isStroke: Bool
+    let strokeColor: Color
     let imageURL: String?
     let overlay: () -> Content
     
@@ -191,12 +192,14 @@ struct MemberIconView<Content: View>: View {
         title: String,
         subTitle: String,
         isStroke: Bool = false,
+        strokeColor: Color = .clear,
         imageURL: String?,
         @ViewBuilder overlay: @escaping () -> Content
     ) {
         self.title = title
         self.subTitle = subTitle
         self.isStroke = isStroke
+        self.strokeColor = strokeColor
         self.imageURL = imageURL
         self.overlay = overlay
     }
@@ -208,6 +211,17 @@ struct MemberIconView<Content: View>: View {
                     KFImage(URL(string: imageURL))
                         .resizable()
                         .aspectRatio(contentMode: .fill)
+                        .overlay(content: {
+                            ZStack {
+                                overlay()
+                            }
+                            .overlay(content: {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .inset(by: 1)
+                                    .stroke(strokeColor, lineWidth: isStroke ? 1 : 0)
+                                    .foregroundStyle(DesignSystem.Colors.lightGray)
+                            })
+                        })
                         .clipShape(
                             RoundedRectangle(cornerRadius: 12)
                         )

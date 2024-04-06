@@ -20,6 +20,7 @@ struct MeetingMatchFeature: Reducer {
         let meetingType: RequestListType
         @BindingState var myTeamModel: RequestMeetingTeamInfoModel
         @BindingState var partnerTeamModel: RequestMeetingTeamInfoModel
+        @BindingState var partnerAttendanceMemberCount: Int = 0
         @BindingState var remainSecond: Int = 0
         @BindingState var isMeetingValidated: Bool = false
         
@@ -180,11 +181,14 @@ struct MeetingMatchFeature: Reducer {
                 return .none
                 
             case .fetchData(let response):
+                var attendancedMyTeamMemberCount = 0
                 response.meetingAttendances.forEach { attendanceStatus in
                     if let index = state.myTeamModel.memberInfos.firstIndex(where: { $0.id == attendanceStatus.memberId }) {
                         state.myTeamModel.memberInfos[index].isAttendance = true
+                        attendancedMyTeamMemberCount += 1
                     }
                 }
+                state.partnerAttendanceMemberCount = response.meetingAttendances.count - attendancedMyTeamMemberCount
                 return .none
                 
             default: return .none
