@@ -25,14 +25,14 @@ struct RequestListView: View {
                     VStack {
                         if !viewStore.isReceiveDataRequested {
                             ProgressView()
-                        } else if viewStore.isReceiveDataRequested && viewStore.receivedDataSources.isEmpty {
+                        } else if viewStore.isReceiveDataRequested && viewStore.sentDataSources.isEmpty {
                             getEmptyView() {
                                 viewStore.send(.didTappedLookAroundMeetingList)
                             }
                         } else {
                             getMeetingListView(
                                 type: .receiving,
-                                dataSources: viewStore.receivedDataSources,
+                                dataSources: viewStore.sentDataSources,
                                 needShowNextPage: viewStore.receiveDataNextCallId != nil,
                                 tapHandler: { index in
                                     guard let type = RequestListType(rawValue: selection) else { return }
