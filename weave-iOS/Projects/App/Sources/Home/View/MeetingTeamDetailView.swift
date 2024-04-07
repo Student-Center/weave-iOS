@@ -108,10 +108,7 @@ struct MeetingTeamDetailView: View {
                             isPresented: viewStore.$isShowRequestSuccessAlert,
                             title: "요청 성공",
                             message: "\(teamModel.teamIntroduce) 팀에게\n미팅 요청을 성공했어요.",
-                            primaryButtonTitle: "확인",
-                            primaryAction: {
-                                viewStore.send(.requestMeeting)
-                            }
+                            primaryButtonTitle: "확인"
                         )
                         
                     case .matchingPartner:
