@@ -25,14 +25,14 @@ struct RequestListView: View {
                     VStack {
                         if !viewStore.isReceiveDataRequested {
                             ProgressView()
-                        } else if viewStore.isReceiveDataRequested && viewStore.sentDataSources.isEmpty {
+                        } else if viewStore.isReceiveDataRequested && viewStore.receivedDataSources.isEmpty {
                             getEmptyView() {
                                 viewStore.send(.didTappedLookAroundMeetingList)
                             }
                         } else {
                             getMeetingListView(
                                 type: .receiving,
-                                dataSources: viewStore.sentDataSources,
+                                dataSources: viewStore.receivedDataSources,
                                 needShowNextPage: viewStore.receiveDataNextCallId != nil,
                                 tapHandler: { index in
                                     guard let type = RequestListType(rawValue: selection) else { return }
@@ -164,8 +164,8 @@ fileprivate struct MeetingItemView: View {
             
             HStack(alignment: .top) {
                 Spacer()
-                
-                ForEach(meeting.receivingTeam.memberInfos, id: \.id) { member in
+                let dataSource = type == .requesting ? meeting.receivingTeam : meeting.requestingTeam
+                ForEach(dataSource.memberInfos, id: \.id) { member in
                     let mbtiType = MBTIType(rawValue: member.mbti.uppercased())
                     MemberIconView(
                         title: member.memberInfoValue,
