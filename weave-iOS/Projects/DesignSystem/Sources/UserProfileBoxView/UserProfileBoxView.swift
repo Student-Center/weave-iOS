@@ -95,11 +95,14 @@ public struct UserProfileBoxView: View {
                             ProgressView()
                         }
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 112, height: 112)
+                        .clipped()
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 } else {
                     RoundedRectangle(cornerRadius: 10)
                         .aspectRatio(contentMode: .fit)
+                        .frame(width: 112, height: 112)
                         .foregroundStyle(DesignSystem.Colors.lightGray)
                 }
             }

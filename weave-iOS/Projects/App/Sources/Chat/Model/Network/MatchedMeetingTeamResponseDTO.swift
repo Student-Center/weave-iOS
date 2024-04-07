@@ -68,8 +68,8 @@ struct MatchedMeetingTeamMemberResponseDTO: Codable {
     let majorName: String
     let mbti: String
     let birthYear: Int
-    let animalType: String
-    let height: Int
+    let animalType: String?
+    let height: Int?
     let isUnivVerified: Bool
     let avatar: String?
     

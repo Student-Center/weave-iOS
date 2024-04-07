@@ -143,25 +143,18 @@ struct MeetingListItemView: View {
     @ViewBuilder
     func userIconView(_ user: MeetingMemberModel) -> some View {
         VStack(spacing: 5) {
-            if let avatar = user.avatar {
-                KFImage(URL(string: avatar))
+            if let mbtiType = user.mbtiType {
+                KFImage(URL(string: mbtiType.mbtiProfileImage))
                     .resizable()
                     .aspectRatio(contentMode: .fill)
+                    .clipShape(
+                        RoundedRectangle(cornerRadius: 12)
+                    )
                     .frame(width: 48, height: 48)
             } else {
-                if let mbtiType = user.mbtiType {
-                    KFImage(URL(string: mbtiType.mbtiProfileImage))
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipShape(
-                            RoundedRectangle(cornerRadius: 12)
-                        )
-                        .frame(width: 48, height: 48)
-                } else {
-                    RoundedRectangle(cornerRadius: 12)
-                        .frame(width: 48, height: 48)
-                        .foregroundStyle(DesignSystem.Colors.lightGray)
-                }
+                RoundedRectangle(cornerRadius: 12)
+                    .frame(width: 48, height: 48)
+                    .foregroundStyle(DesignSystem.Colors.lightGray)
             }
             
             Text(user.userInfoString)
