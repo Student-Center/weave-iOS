@@ -39,6 +39,7 @@ struct MyPageView: View {
                                             viewType: viewType,
                                             userInfo: userInfo
                                         )
+                                        .contentShape(Rectangle())
                                         .onTapGesture {
                                             viewStore.send(.didTappedSubViews(view: viewType))
                                         }
