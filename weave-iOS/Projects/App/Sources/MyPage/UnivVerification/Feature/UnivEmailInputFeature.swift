@@ -29,6 +29,7 @@ struct UnivEmailInputFeature: Reducer {
         case fetchUniversityInfo(dto: UniversityInfoResponseDTO)
         case requestSendVerifyEmail
         case showSendErrorAlert
+        case didTappedBackButton
         case didCompleteSendEmail
         case pushNextView
         case binding(BindingAction<State>)
@@ -93,6 +94,11 @@ struct UnivEmailInputFeature: Reducer {
             case .destination(.presented(.emailVerify(.didSuccessedVerifyEmail))):
                 return .run { send in
                     await send.callAsFunction(.didCompleteVerifyEmail)
+                }
+                
+            case .didTappedBackButton:
+                return .run { send in
+                    await dismiss()
                 }
                 
             default:
