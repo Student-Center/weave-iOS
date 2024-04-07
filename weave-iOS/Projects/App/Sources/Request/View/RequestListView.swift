@@ -25,10 +25,6 @@ struct RequestListView: View {
                     VStack {
                         if !viewStore.isReceiveDataRequested {
                             ProgressView()
-                        } else if viewStore.isReceiveDataRequested && viewStore.receivedDataSources.isEmpty {
-                            getEmptyView() {
-                                viewStore.send(.didTappedLookAroundMeetingList)
-                            }
                         } else {
                             getMeetingListView(
                                 type: .receiving,
@@ -43,6 +39,9 @@ struct RequestListView: View {
                                 },
                                 scrollRefreshHandler: { type in
                                     viewStore.send(.requestList(type: type))
+                                },
+                                lookAroundMeetingListHandler: {
+                                    viewStore.send(.didTappedLookAroundMeetingList)
                                 }
                             )
                         }
@@ -55,10 +54,6 @@ struct RequestListView: View {
                     VStack {
                         if !viewStore.isSentDataRequested {
                             ProgressView()
-                        } else if viewStore.isSentDataRequested && viewStore.sentDataSources.isEmpty {
-                            getEmptyView() {
-                                viewStore.send(.didTappedLookAroundMeetingList)
-                            }
                         } else {
                             getMeetingListView(
                                 type: .requesting,
@@ -73,6 +68,9 @@ struct RequestListView: View {
                                 }, 
                                 scrollRefreshHandler: { type in
                                     viewStore.send(.requestList(type: type))
+                                },
+                                lookAroundMeetingListHandler: {
+                                    viewStore.send(.didTappedLookAroundMeetingList)
                                 }
                             )
                         }
@@ -101,22 +99,29 @@ struct RequestListView: View {
         needShowNextPage: Bool,
         tapHandler: @escaping (Int) -> Void,
         nextPageHandler: @escaping (RequestListType) -> Void,
-        scrollRefreshHandler: @escaping (RequestListType) -> Void
+        scrollRefreshHandler: @escaping (RequestListType) -> Void,
+        lookAroundMeetingListHandler: @escaping () -> Void
     ) -> some View {
         VStack {
             ScrollView {
-                ForEach(0 ..< dataSources.count, id: \.self) { index in
-                    let meeting = dataSources[index]
-                    MeetingItemView(meeting: meeting, type: type)
-                        .onTapGesture {
-                            tapHandler(index)
-                        }
-                }
-                if !dataSources.isEmpty && needShowNextPage {
-                    ProgressView()
-                        .onAppear {
-                            nextPageHandler(type)
-                        }
+                if dataSources.isEmpty {
+                    getEmptyView() {
+                        lookAroundMeetingListHandler()
+                    }
+                } else {
+                    ForEach(0 ..< dataSources.count, id: \.self) { index in
+                        let meeting = dataSources[index]
+                        MeetingItemView(meeting: meeting, type: type)
+                            .onTapGesture {
+                                tapHandler(index)
+                            }
+                    }
+                    if !dataSources.isEmpty && needShowNextPage {
+                        ProgressView()
+                            .onAppear {
+                                nextPageHandler(type)
+                            }
+                    }
                 }
             }
             .refreshable {
@@ -130,6 +135,8 @@ struct RequestListView: View {
     @ViewBuilder
     func getEmptyView(handler: @escaping () -> Void) -> some View {
         VStack(alignment: .center, spacing: 10) {
+            Spacer()
+                .frame(height: 200)
             Text("미팅을 요청해 보세요!")
                 .font(.pretendard(._600, size: 22))
             Text("아직 받은 요청이 없어요")
