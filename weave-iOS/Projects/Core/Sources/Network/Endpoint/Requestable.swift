@@ -13,7 +13,7 @@ public protocol Requestable {
     var method: HTTPMethod { get }
     var queryParameters: Encodable? { get }
     var bodyParameters: Encodable? { get }
-    var headers: [String: String]? { get }
+    var headers: [String: String]? { get set }
 }
 
 extension Requestable {

@@ -151,7 +151,7 @@ struct RequestListFeature: Reducer {
         let requestDTO = RequestMeetingListRequestDTO(teamType: type, next: nextId)
         let endPoint = APIEndpoints.getRequestMeetingTeamList(request: requestDTO)
         let provider = APIProvider()
-        let response = try await provider.request(with: endPoint)
+        let response = try await provider.request(with: endPoint, showErrorAlert: false)
         return response
     }
 }

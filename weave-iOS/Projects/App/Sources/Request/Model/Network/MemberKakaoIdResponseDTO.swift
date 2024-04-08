@@ -7,6 +7,7 @@
 
 import Foundation
 import Services
+import CoreKit
 
 struct MeetingTeamKakaoIdResponseDTO: Decodable {
     let members: [MemberKakaoIdResponseDTO]
@@ -14,7 +15,7 @@ struct MeetingTeamKakaoIdResponseDTO: Decodable {
 
 struct MemberKakaoIdResponseDTO: Decodable {
     let memberId: String
-    let kakaoId: String
+    let kakaoId: String?
 }
 
 extension APIEndpoints {

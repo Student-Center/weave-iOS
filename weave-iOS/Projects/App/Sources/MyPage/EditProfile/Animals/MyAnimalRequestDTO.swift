@@ -7,6 +7,7 @@
 
 import Foundation
 import Services
+import CoreKit
 
 struct MyAnimalEditRequestDTO: Encodable {
     let animalType: String

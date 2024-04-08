@@ -10,9 +10,11 @@ import ComposableArchitecture
 import Services
 import AVFoundation
 import DesignSystem
+import CoreKit
 
 struct MyPageFeature: Reducer {
     @Dependency(\.tabViewCoordinator) var tabViewCoordinator
+    @Dependency(\.coordinator) var appCoordinator
     struct State: Equatable {
         var myUserInfo: MyUserInfoModel?
         @BindingState var isShowEditProfileImageAlert: Bool = false
@@ -132,10 +134,12 @@ struct MyPageFeature: Reducer {
             case .destination(.presented(.presentSetting(.resignSuccessed))):
                 state.destination = nil
                 return .run { send in
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
                     await send.callAsFunction(.didSuccessedResign)
                 }
                 
             case .didSuccessedResign:
+                appCoordinator.changeRoot(to: .loginView)
                 return .none
                 
             case .showPhotoPicker:

@@ -9,7 +9,10 @@ let Services = Target(
                            devices: .iphone,
                            supportsMacDesignedForIOS: false),
     sources: ["Sources/Network/**"],
-    dependencies: []
+    dependencies: [
+        .project(target: "CoreKit",
+                 path: .relativeToRoot("Projects/Core")),
+    ]
 )
 
 let CoreKit = Target(

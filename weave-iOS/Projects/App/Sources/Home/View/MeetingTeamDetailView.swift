@@ -81,7 +81,7 @@ struct MeetingTeamDetailView: View {
                             }
                         )
                         .weaveAlert(
-                            isPresented: viewStore.$isShowNoTeamAlert,
+                            isPresented: viewStore.$isShowNeedUnivVerifyAlert,
                             title: "대학교 인증이 필요해요",
                             message: """
                                 학교 메일을 인증한 회원만
@@ -108,10 +108,7 @@ struct MeetingTeamDetailView: View {
                             isPresented: viewStore.$isShowRequestSuccessAlert,
                             title: "요청 성공",
                             message: "\(teamModel.teamIntroduce) 팀에게\n미팅 요청을 성공했어요.",
-                            primaryButtonTitle: "확인",
-                            primaryAction: {
-                                viewStore.send(.requestMeeting)
-                            }
+                            primaryButtonTitle: "확인"
                         )
                         
                     case .matchingPartner:
@@ -211,22 +208,51 @@ struct TeamChemistryView: View {
     let score: Int?
     
     var body: some View {
-        VStack(spacing: 10) {
+        ZStack {
             if let score {
-                Text("이런게 환상의 케미?")
-                    .font(.pretendard(._700, size: 20))
-                    .foregroundStyle(DesignSystem.Colors.defaultBlue)
-                
-                StarRatingView(rating: Double(score))
-                
-                Text("우리 팀과의 케미는 \(20 * score)점")
-                    .font(.pretendard(._500, size: 12))
-                    .foregroundStyle(DesignSystem.Colors.gray500)
+                getChemiSectionView(score: score)
             } else {
-                Text("케미 정보가 없습니다")
-                    .font(.pretendard(._700, size: 20))
+                getChemiSectionView(score: 80)
+                    .blur(radius: 5)
+                Text("내 팀을 만들면\n상대팀과의 케미를 알 수 있어요!")
+                    .font(.pretendard(._500, size: 14))
+                    .multilineTextAlignment(.center)
             }
         }
+    }
+    
+    @ViewBuilder
+    func getChemiSectionView(score: Int) -> some View {
+        VStack(spacing: 10) {
+            Text(getChemiDescriptionString(score: score))
+                .font(.pretendard(._700, size: 20))
+                .foregroundStyle(DesignSystem.Colors.defaultBlue)
+            
+            StarRatingView(rating: Double(score))
+            
+            Text("우리 팀과의 케미는 \(20 * score)점")
+                .font(.pretendard(._500, size: 12))
+                .foregroundStyle(DesignSystem.Colors.gray500)
+        }
+    }
+    
+    func getChemiDescriptionString(score: Int) -> String {
+        
+        var description: String = ""
+        let score = score * 20
+        if score >= 0 && score <= 40 {
+            description = "열린 마음이 필요해요"
+        } else if score >= 41 && score <= 60 {
+            description = "만나면 시간 순삭!"
+        } else if score >= 61 && score <= 80 {
+            description = "이런게 환상의 케미?"
+        } else if score >= 81 && score <= 100 {
+            description = "당장 미팅 요청하세요"
+        } else {
+            description = "케이 정보가 없습니다"
+        }
+        
+        return description
     }
 }
 

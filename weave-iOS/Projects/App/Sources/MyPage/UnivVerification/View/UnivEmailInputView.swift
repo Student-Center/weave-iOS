@@ -70,9 +70,10 @@ struct UnivEmailInputView: View {
                 )
             }
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     viewStore.send(.requestUniversityInfo)
-                }
+//                }
+                UIApplication.shared.hideKeyboard()
             }
             .navigationBarBackButtonHidden()
             .toolbarTitleDisplayMode(.inline)

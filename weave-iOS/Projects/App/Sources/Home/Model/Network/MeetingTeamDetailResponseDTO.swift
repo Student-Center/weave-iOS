@@ -8,6 +8,7 @@
 import Foundation
 import Services
 import DesignSystem
+import CoreKit
 
 struct MeetingTeamDetailResponseDTO: Codable {
     let id: String
@@ -31,7 +32,7 @@ struct MeetingTeamDetailResponseDTO: Codable {
                     userId: $0.userId,
                     universityName: $0.universityName,
                     majorName: $0.majorName,
-                    mbti: MBTIType(rawValue: $0.mbti),
+                    mbti: MBTIType(rawValue: $0.mbti.uppercased()),
                     birthYear: $0.birthYear,
                     role: $0.role,
                     animalType: $0.animalType,

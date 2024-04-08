@@ -8,6 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Services
+import CoreKit
 
 struct SettingFeautre: Reducer {
     @Dependency(\.coordinator) var appCoordinator
@@ -94,6 +95,5 @@ struct SettingFeautre: Reducer {
     private func resetLoginToken() {
         UDManager.accessToken = ""
         UDManager.refreshToken = ""
-        appCoordinator.changeRoot(to: .loginView)
     }
 }

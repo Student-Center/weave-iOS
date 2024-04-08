@@ -7,6 +7,7 @@
 
 import Foundation
 import Services
+import CoreKit
 
 struct ProfileImageUploadPresignedURLResponseDTO: Decodable {
     let uploadUrl: String

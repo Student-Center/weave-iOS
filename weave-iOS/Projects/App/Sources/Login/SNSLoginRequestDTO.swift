@@ -12,11 +12,6 @@ struct SNSLoginRequestDTO: Encodable {
     let idToken: String
 }
 
-struct SNSLoginResponseDTO: Decodable {
-    let accessToken: String
-    let refreshToken: String
-}
-
 enum SNSLoginType {
     case apple
     case kakao

@@ -6,69 +6,71 @@
 //
 
 import SwiftUI
+import DesignSystem
+import Services
 import ComposableArchitecture
+import CoreKit
 
 struct AppView: View {
-    @State private var coordinator = AppCoordinator.shared
+
+    let store: StoreOf<AppViewFeature>
+    
+    @ObservedObject private var coordinator = AppCoordinator.shared
+    @State private var networkErrorManager = ServiceErrorManager.shared
     
     var body: some View {
-        NavigationStack(path: $coordinator.paths) {
-            switch coordinator.currentRoot {
-            case .mainView:
-                AppTabView(
-                    store: Store(
-                        initialState: AppTabViewFeature.State(),
-                        reducer: {
-                            AppTabViewFeature()
-                        }
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            NavigationStack {
+                IfLetStore(
+                    store.scope(
+                        state: \.splashState,
+                        action: { .splashAction( $0 ) }
                     )
-                )
-            case .loginView:
-                LoginView()
-            case .signUpView(let registToken):
-                SignUpView(
-                    store: Store(
-                        initialState: SignUpFeature.State(
-                            registerToken: registToken
-                        )
-                    ) {
-                        SignUpFeature()
+                ) { subStore in
+                    SplashView(store: subStore)
+                }
+                
+                IfLetStore(
+                    store.scope(
+                        state: \.mainState,
+                        action: { .mainAction( $0 ) }
+                    )
+                ) { subStore in
+                    AppTabView(store: subStore)
+                }
+                
+                IfLetStore(
+                    store.scope(
+                        state: \.loginState,
+                        action: { .loginAction( $0 ) }
+                    )
+                ) { subStore in
+                    LoginView(store: subStore)
+                }
+                
+                IfLetStore(
+                    store.scope(
+                        state: \.signUpState,
+                        action: { .signUpAction( $0 ) }
+                    )
+                ) { subStore in
+                    SignUpView(store: subStore)
+                }
+                .onReceive(NotificationManager.publisher(.splash)) { _ in
+                    store.send(.changeRoot(.splash), animation: .default)
+                }
+                .onReceive(NotificationManager.publisher(.main)) { _ in
+                    store.send(.changeRoot(.mainView), animation: .default)
+                }
+                .onReceive(NotificationManager.publisher(.login)) { _ in
+                    store.send(.changeRoot(.loginView), animation: .default)
+                }
+                .onReceive(NotificationManager.publisher(.signUp)) { hashable in
+                    if let registToken = hashable?["registToken"] as? String {
+                        store.send(.changeRoot(.signUpView(registToken: registToken)), animation: .default)
                     }
-                )
+                }
             }
-        }
-    }
-}
-
-
-
-
-@Observable final class AppCoordinator: ObservableObject {
-    var paths: [RootViewType] = []
-    private(set) var currentRoot: RootViewType
-    
-    static let shared: AppCoordinator = AppCoordinator()
-    
-    enum RootViewType: Hashable {
-        case mainView
-        case loginView
-        case signUpView(registToken: String)
-    }
-    
-    public func changeRoot(to viewType: RootViewType) {
-        withAnimation {
-            currentRoot = viewType
-        }
-    }
-    
-    public func appendPath(_ path: RootViewType) {
-        paths.append(path)
-    }
-    private init() {
-        if UDManager.isLogin {
-            currentRoot = .mainView
-        } else {
-            currentRoot = .loginView
         }
     }
 }
