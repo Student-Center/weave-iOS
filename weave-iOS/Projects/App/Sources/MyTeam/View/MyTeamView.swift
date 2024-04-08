@@ -62,6 +62,16 @@ struct MyTeamView: View {
                         }
                     }
                 }
+                .weaveAlert(
+                    isPresented: viewStore.$isShowNeedKakaoIdAlert,
+                    title: "카카오톡 ID가 필요해요!",
+                    message: "카카오톡 ID를 입력한 회원만\n내 팀 생성이 가능해요.\n지금 바로 입력하러 가볼까요?",
+                    primaryButtonTitle: "네, 좋아요",
+                    secondaryButtonTitle: "나중에",
+                    primaryAction: {
+                        viewStore.send(.didTappedGoToKakaoIdInputView)
+                    }
+                )
                 .onLoad {
                     viewStore.send(.requestMyTeamList)
                 }

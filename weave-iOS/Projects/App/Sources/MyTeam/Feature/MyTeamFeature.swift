@@ -13,6 +13,7 @@ struct MyTeamFeature: Reducer {
     struct State: Equatable {
         @BindingState var myTeamList: [MyTeamItemModel]
         @BindingState var isShowActivityView = false
+        @BindingState var isShowNeedKakaoIdAlert = false
         
         @PresentationState var destination: Destination.State?
         
@@ -30,6 +31,7 @@ struct MyTeamFeature: Reducer {
         case didTappedGenerateMyTeam
         case didTappedModifyMyTeam(team: MyTeamItemModel)
         case didTappedInviteButton(team: MyTeamItemModel)
+        case didTappedGoToKakaoIdInputView
         
         case requestMyTeamList
         case requestMyTeamListNextPage
@@ -49,6 +51,11 @@ struct MyTeamFeature: Reducer {
             switch action {
                 
             case .didTappedGenerateMyTeam:
+                // 카카오 ID가 없으면 dialog 로 진입 불가
+                if UserInfo.myInfo?.kakaoId == nil {
+                    state.isShowNeedKakaoIdAlert = true
+                    return .none
+                }
                 state.destination = .generateMyTeam(.init())
                 return .none
                 
