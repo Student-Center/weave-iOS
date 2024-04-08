@@ -65,7 +65,7 @@ struct MyPageView: View {
                     primaryButtonTitle: "네, 좋아요",
                     secondaryButtonTitle: "나중에",
                     primaryAction: {
-                        
+                        viewStore.send(.didTappedGoToGenerateMyTeam)
                     }
                 )
                 .onLoad {
