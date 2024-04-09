@@ -22,7 +22,9 @@ struct MeetingMatchView: View {
                             getTimeRemainView(second: viewStore.remainSecond)
                             MeetingMatchTeamView(
                                 title: "상대 팀",
-                                teamInfo: viewStore.partnerTeamModel
+                                teamInfo: viewStore.partnerTeamModel,
+                                meetingAttendanceMemberCount: viewStore.partnerAttendanceMemberCount
+                                
                             )
                             .containerShape(Rectangle())
                             .onTapGesture {
@@ -172,8 +174,12 @@ struct MeetingMatchView: View {
 fileprivate struct MeetingMatchTeamView: View {
     let title: String
     let teamInfo: RequestMeetingTeamInfoModel
+    var meetingAttendanceMemberCount: Int?
     
     var attendancedMemberCount: Int {
+        if let meetingAttendanceMemberCount {
+            return meetingAttendanceMemberCount
+        }
         return teamInfo.memberInfos
             .filter { $0.isAttendance == true }
             .count
@@ -211,11 +217,16 @@ fileprivate struct MeetingMatchTeamView: View {
                         MemberIconView(
                             title: member.memberInfoValue,
                             subTitle: member.mbti,
-                            isStroke: isSelf,
+                            isStroke: isSelf || member.isAttendance == true,
+                            strokeColor: isSelf ? .white : DesignSystem.Colors.lightGray,
                             imageURL: mbtiType?.mbtiProfileImage,
                             overlay: {
                                 if member.isAttendance == true {
-                                    isSelf ? DesignSystem.Icons.whiteCheck : DesignSystem.Icons.greenCheck
+                                    ZStack {
+                                        Rectangle()
+                                            .foregroundStyle(.black.opacity(0.4))
+                                        isSelf ? DesignSystem.Icons.whiteCheck : DesignSystem.Icons.greenCheck
+                                    }
                                 }
                             }
                         )

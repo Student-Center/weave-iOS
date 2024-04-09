@@ -28,6 +28,7 @@ struct SettingView: View {
                             index: index,
                             viewType: viewType
                         )
+                        .contentShape(Rectangle())
                         .onTapGesture {
                             viewStore.send(.didTappedSubViews(view: viewType))
                         }

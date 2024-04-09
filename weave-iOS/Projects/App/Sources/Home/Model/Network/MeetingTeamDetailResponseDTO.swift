@@ -53,7 +53,7 @@ struct MeetingTeamDetailMemberDTO: Codable {
     let mbti: String
     let birthYear: Int
     let role: String
-    let animalType: String
+    let animalType: String?
     let height: Int?
     let isUnivVerified: Bool
 }

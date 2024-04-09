@@ -39,6 +39,7 @@ struct MyPageView: View {
                                             viewType: viewType,
                                             userInfo: userInfo
                                         )
+                                        .contentShape(Rectangle())
                                         .onTapGesture {
                                             viewStore.send(.didTappedSubViews(view: viewType))
                                         }
@@ -64,7 +65,7 @@ struct MyPageView: View {
                     primaryButtonTitle: "네, 좋아요",
                     secondaryButtonTitle: "나중에",
                     primaryAction: {
-                        
+                        viewStore.send(.didTappedGoToGenerateMyTeam)
                     }
                 )
                 .onLoad {

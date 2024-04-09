@@ -117,6 +117,7 @@ struct MeetingTeamDetailFeature: Reducer {
                 guard let meetingId = state.meetingId else { return .none }
                 return .run { send in
                     try await requestMatchAction(teamId: meetingId, actionType: .attend)
+                    await send.callAsFunction(.requestPass)
                 } catch: { error, send in
                     await send.callAsFunction(.alreadyResponsed)
                 }
@@ -125,6 +126,7 @@ struct MeetingTeamDetailFeature: Reducer {
                 guard let meetingId = state.meetingId else { return .none }
                 return .run { send in
                     try await requestMatchAction(teamId: meetingId, actionType: .pass)
+                    await send.callAsFunction(.requestPass)
                 } catch: { error, send in
                     await send.callAsFunction(.alreadyResponsed)
                 }

@@ -21,45 +21,57 @@ struct MyTeamView: View {
                 VStack {
                     if !viewStore.didDataFetched {
                         ProgressView()
-                    } else if viewStore.didDataFetched && viewStore.myTeamList.isEmpty {
-                        getEmptyView() {
-                            viewStore.send(.didTappedGenerateMyTeam)
-                        }
-                    } else {
+                    }  else {
                         ScrollView {
-                            LazyVStack(spacing: 20) {
-                                ForEach(viewStore.myTeamList, id: \.id) { team in
-                                    MyTeamItemView(store: store, teamModel: team)
+                            if viewStore.myTeamList.isEmpty {
+                                getEmptyView() {
+                                    viewStore.send(.didTappedGenerateMyTeam)
                                 }
-                                
-                                if !viewStore.myTeamList.isEmpty && viewStore.nextCallId != nil {
-                                    ProgressView()
-                                        .onAppear {
-                                            viewStore.send(.requestMyTeamListNextPage)
-                                        }
-                                }
-                                
-                                if !viewStore.myTeamList.isEmpty {
-                                    Text(
+                            } else {
+                                LazyVStack(spacing: 20) {
+                                    ForEach(viewStore.myTeamList, id: \.id) { team in
+                                        MyTeamItemView(store: store, teamModel: team)
+                                    }
+                                    
+                                    if !viewStore.myTeamList.isEmpty && viewStore.nextCallId != nil {
+                                        ProgressView()
+                                            .onAppear {
+                                                viewStore.send(.requestMyTeamListNextPage)
+                                            }
+                                    }
+                                    
+                                    if !viewStore.myTeamList.isEmpty {
+                                        Text(
                                     """
                                     팀원이 다 들어오면 자동으로 팀이 공개되고,
                                     미팅 요청을 받을 수 있어요!
                                     """
-                                    )
-                                    .font(.pretendard(._500, size: 14))
-                                    .foregroundStyle(DesignSystem.Colors.lightGray)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.vertical, 11)
+                                        )
+                                        .font(.pretendard(._500, size: 14))
+                                        .foregroundStyle(DesignSystem.Colors.lightGray)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.vertical, 11)
+                                    }
                                 }
+                                .padding(.vertical, 20)
+                                .padding(.horizontal, 16)
                             }
-                            .padding(.vertical, 20)
-                            .padding(.horizontal, 16)
                         }
                         .refreshable {
                             viewStore.send(.requestMyTeamList)
                         }
                     }
                 }
+                .weaveAlert(
+                    isPresented: viewStore.$isShowNeedKakaoIdAlert,
+                    title: "카카오톡 ID가 필요해요!",
+                    message: "카카오톡 ID를 입력한 회원만\n내 팀 생성이 가능해요.\n지금 바로 입력하러 가볼까요?",
+                    primaryButtonTitle: "네, 좋아요",
+                    secondaryButtonTitle: "나중에",
+                    primaryAction: {
+                        viewStore.send(.didTappedGoToKakaoIdInputView)
+                    }
+                )
                 .onLoad {
                     viewStore.send(.requestMyTeamList)
                 }
@@ -83,6 +95,8 @@ struct MyTeamView: View {
     @ViewBuilder
     func getEmptyView(handler: @escaping () -> Void) -> some View {
         VStack(spacing: 10) {
+            Spacer()
+                .frame(height: 200)
             Text("내 팀을 만들어 보세요!")
                 .font(.pretendard(._600, size: 22))
             Text("내 팀이 있어야 미팅 요청을 할 수 있어요.")

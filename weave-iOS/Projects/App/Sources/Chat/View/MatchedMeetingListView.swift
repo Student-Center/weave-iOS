@@ -20,28 +20,30 @@ struct MatchedMeetingListView: View {
                 VStack {
                     if !viewStore.isNetworkRequested {
                         ProgressView()
-                    } else if viewStore.isNetworkRequested && viewStore.teamList.isEmpty {
-                        getEmptyView {
-                            viewStore.send(.didTappedLookAroundMeetingList)
-                        }
                     } else {
                         ScrollView {
-                            LazyVGrid(columns: [column], spacing: 16, content: {
-                                ForEach(viewStore.teamList, id: \.id) { team in
-                                    MeetingListItemView(teamModel: team.otherTeam)
-                                        .contentShape(Rectangle())
-                                        .onTapGesture {
-                                            viewStore.send(.didTappedTeamView(team: team))
-                                        }
+                            if viewStore.teamList.isEmpty {
+                                getEmptyView {
+                                    viewStore.send(.didTappedLookAroundMeetingList)
                                 }
-                                if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
-                                    ProgressView()
-                                        .onAppear {
-                                            viewStore.send(.requestMeetingTeamListNextPage)
-                                        }
-                                }
-                            })
-                            .padding(.top, 20)
+                            } else {
+                                LazyVGrid(columns: [column], spacing: 16, content: {
+                                    ForEach(viewStore.teamList, id: \.id) { team in
+                                        MeetingListItemView(teamModel: team.otherTeam)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture {
+                                                viewStore.send(.didTappedTeamView(team: team))
+                                            }
+                                    }
+                                    if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                                        ProgressView()
+                                            .onAppear {
+                                                viewStore.send(.requestMeetingTeamListNextPage)
+                                            }
+                                    }
+                                })
+                                .padding(.top, 20)
+                            }
                         }
                         .refreshable {
                             viewStore.send(.requestMeetingTeamList)
@@ -71,6 +73,8 @@ struct MatchedMeetingListView: View {
     @ViewBuilder
     func getEmptyView(handler: @escaping () -> Void) -> some View {
         VStack(spacing: 10) {
+            Spacer()
+                .frame(height: 200)
             Text("🙏")
             Text("미팅을 요청해 보세요!")
                 .font(.pretendard(._600, size: 22))

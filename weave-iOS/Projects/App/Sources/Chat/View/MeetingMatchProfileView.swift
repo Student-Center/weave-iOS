@@ -33,7 +33,11 @@ struct MeetingMatchProfileView: View {
                         ForEach(viewStore.partnerTeamModel.memberInfos, id: \.id) { member in
                             let mbtiType = member.mbtiType
                             let animalType = member.animalType
-                            let profileImage = viewStore.isProfileOpen ? member.avatar : mbtiType?.mbtiProfileImage
+                            let profileImage = getProfileImageString(
+                                isProfileOpend: viewStore.isProfileOpen,
+                                avatarString: member.avatar,
+                                mbtiType: mbtiType
+                            )
                             let kakaoId = viewStore.isProfileOpen ? member.kakaoId : nil
                             
                             let profileViewConfig = UserProfileBoxConfig(
@@ -42,7 +46,7 @@ struct MeetingMatchProfileView: View {
                                 height: member.height,
                                 profileImage: profileImage,
                                 univName: member.universityName,
-                                majorName: "학과정보없음", // ToDo - 학과
+                                majorName: member.majorName ?? "", // ToDo - 학과
                                 birthYear: member.birthYear,
                                 isUnivVerified: true,
                                 kakaoId: kakaoId
@@ -50,7 +54,7 @@ struct MeetingMatchProfileView: View {
                             UserProfileBoxView(config: profileViewConfig)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    viewStore.send(.didProfileTapped)
+                                    viewStore.send(.didProfileTapped, animation: .default)
                                 }
                         }
                     }
@@ -79,5 +83,19 @@ struct MeetingMatchProfileView: View {
                 }
             }
         }
+    }
+    
+    func getProfileImageString(
+        isProfileOpend: Bool,
+        avatarString: String?,
+        mbtiType: MBTIType?
+    ) -> String? {
+        var profileImageString = String()
+        if isProfileOpend,
+           let avatarString {
+            profileImageString = avatarString
+            return profileImageString
+        }
+        return mbtiType?.mbtiProfileImage
     }
 }

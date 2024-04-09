@@ -39,6 +39,7 @@ struct MyPageFeature: Reducer {
         case didTappedShowCamera
         case didCameraPermissionDenied
         case didSuccessedResign
+        case didTappedGoToGenerateMyTeam
         case showCamera
         case showAppPreference
         case didPickPhotoCompleted(image: UIImage)
@@ -129,7 +130,7 @@ struct MyPageFeature: Reducer {
             case .destination(.presented(.univVerify(.didCompleteVerifyEmail))):
                 state.destination = nil
                 state.isShowCompleteUnivVerifyAlert.toggle()
-                return .none
+                return .send(.requestMyUserInfo)
                 
             case .destination(.presented(.presentSetting(.resignSuccessed))):
                 state.destination = nil

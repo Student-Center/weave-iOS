@@ -9,6 +9,7 @@ import SwiftUI
 import DesignSystem
 import ComposableArchitecture
 import CoreKit
+import Kingfisher
 
 struct RequestListView: View {
     @State var selection: Int = 0
@@ -24,10 +25,6 @@ struct RequestListView: View {
                     VStack {
                         if !viewStore.isReceiveDataRequested {
                             ProgressView()
-                        } else if viewStore.isReceiveDataRequested && viewStore.receivedDataSources.isEmpty {
-                            getEmptyView() {
-                                viewStore.send(.didTappedLookAroundMeetingList)
-                            }
                         } else {
                             getMeetingListView(
                                 type: .receiving,
@@ -42,6 +39,9 @@ struct RequestListView: View {
                                 },
                                 scrollRefreshHandler: { type in
                                     viewStore.send(.requestList(type: type))
+                                },
+                                lookAroundMeetingListHandler: {
+                                    viewStore.send(.didTappedLookAroundMeetingList)
                                 }
                             )
                         }
@@ -54,10 +54,6 @@ struct RequestListView: View {
                     VStack {
                         if !viewStore.isSentDataRequested {
                             ProgressView()
-                        } else if viewStore.isSentDataRequested && viewStore.sentDataSources.isEmpty {
-                            getEmptyView() {
-                                viewStore.send(.didTappedLookAroundMeetingList)
-                            }
                         } else {
                             getMeetingListView(
                                 type: .requesting,
@@ -72,6 +68,9 @@ struct RequestListView: View {
                                 }, 
                                 scrollRefreshHandler: { type in
                                     viewStore.send(.requestList(type: type))
+                                },
+                                lookAroundMeetingListHandler: {
+                                    viewStore.send(.didTappedLookAroundMeetingList)
                                 }
                             )
                         }
@@ -100,22 +99,29 @@ struct RequestListView: View {
         needShowNextPage: Bool,
         tapHandler: @escaping (Int) -> Void,
         nextPageHandler: @escaping (RequestListType) -> Void,
-        scrollRefreshHandler: @escaping (RequestListType) -> Void
+        scrollRefreshHandler: @escaping (RequestListType) -> Void,
+        lookAroundMeetingListHandler: @escaping () -> Void
     ) -> some View {
         VStack {
             ScrollView {
-                ForEach(0 ..< dataSources.count, id: \.self) { index in
-                    let meeting = dataSources[index]
-                    MeetingItemView(meeting: meeting, type: type)
-                        .onTapGesture {
-                            tapHandler(index)
-                        }
-                }
-                if !dataSources.isEmpty && needShowNextPage {
-                    ProgressView()
-                        .onAppear {
-                            nextPageHandler(type)
-                        }
+                if dataSources.isEmpty {
+                    getEmptyView() {
+                        lookAroundMeetingListHandler()
+                    }
+                } else {
+                    ForEach(0 ..< dataSources.count, id: \.self) { index in
+                        let meeting = dataSources[index]
+                        MeetingItemView(meeting: meeting, type: type)
+                            .onTapGesture {
+                                tapHandler(index)
+                            }
+                    }
+                    if !dataSources.isEmpty && needShowNextPage {
+                        ProgressView()
+                            .onAppear {
+                                nextPageHandler(type)
+                            }
+                    }
                 }
             }
             .refreshable {
@@ -129,6 +135,8 @@ struct RequestListView: View {
     @ViewBuilder
     func getEmptyView(handler: @escaping () -> Void) -> some View {
         VStack(alignment: .center, spacing: 10) {
+            Spacer()
+                .frame(height: 200)
             Text("미팅을 요청해 보세요!")
                 .font(.pretendard(._600, size: 22))
             Text("아직 받은 요청이 없어요")
@@ -163,8 +171,8 @@ fileprivate struct MeetingItemView: View {
             
             HStack(alignment: .top) {
                 Spacer()
-                
-                ForEach(meeting.receivingTeam.memberInfos, id: \.id) { member in
+                let dataSource = type == .requesting ? meeting.receivingTeam : meeting.requestingTeam
+                ForEach(dataSource.memberInfos, id: \.id) { member in
                     let mbtiType = MBTIType(rawValue: member.mbti.uppercased())
                     MemberIconView(
                         title: member.memberInfoValue,
@@ -183,6 +191,7 @@ struct MemberIconView<Content: View>: View {
     let title: String
     let subTitle: String
     let isStroke: Bool
+    let strokeColor: Color
     let imageURL: String?
     let overlay: () -> Content
     
@@ -190,12 +199,14 @@ struct MemberIconView<Content: View>: View {
         title: String,
         subTitle: String,
         isStroke: Bool = false,
+        strokeColor: Color = .clear,
         imageURL: String?,
         @ViewBuilder overlay: @escaping () -> Content
     ) {
         self.title = title
         self.subTitle = subTitle
         self.isStroke = isStroke
+        self.strokeColor = strokeColor
         self.imageURL = imageURL
         self.overlay = overlay
     }
@@ -203,15 +214,36 @@ struct MemberIconView<Content: View>: View {
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .inset(by: 1)
-                    .stroke(.white, lineWidth: isStroke ? 1 : 0)
-                    .foregroundStyle(DesignSystem.Colors.lightGray)
-                    .background(DesignSystem.Colors.lightGray)
-                    .overlay(content: {
-                        overlay()
-                    })
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                if let imageURL {
+                    KFImage(URL(string: imageURL))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .overlay(content: {
+                            ZStack {
+                                overlay()
+                            }
+                            .overlay(content: {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .inset(by: 1)
+                                    .stroke(strokeColor, lineWidth: isStroke ? 1 : 0)
+                                    .foregroundStyle(DesignSystem.Colors.lightGray)
+                            })
+                        })
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: 12)
+                        )
+                        .frame(width: 48, height: 48)
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .inset(by: 1)
+                        .stroke(.white, lineWidth: isStroke ? 1 : 0)
+                        .foregroundStyle(DesignSystem.Colors.lightGray)
+                        .background(DesignSystem.Colors.lightGray)
+                        .overlay(content: {
+                            overlay()
+                        })
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
             }
             .frame(width: 48, height: 48)
             .frame(maxWidth: .infinity)

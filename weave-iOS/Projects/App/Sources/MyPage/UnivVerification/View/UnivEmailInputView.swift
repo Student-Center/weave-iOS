@@ -80,7 +80,12 @@ struct UnivEmailInputView: View {
             .navigationTitle("대학교 인증")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Image(systemName: "chevron.left")
+                    Button {
+                        viewStore.send(.didTappedBackButton)
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                    .foregroundStyle(.white)
                 }
             }
             .navigationDestination(

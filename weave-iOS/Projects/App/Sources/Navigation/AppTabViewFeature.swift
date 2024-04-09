@@ -104,6 +104,14 @@ struct AppTabViewFeature: Reducer {
                     return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
                 }
                 return .none
+                
+            case .myPage(.didTappedGoToGenerateMyTeam):
+                tabViewCoordinator.changeTab(to: .myTeam)
+                return .send(.myTeamList(.didTappedGenerateMyTeam))
+                
+            case .myTeamList(.didTappedGoToKakaoIdInputView):
+                tabViewCoordinator.changeTab(to: .myPage)
+                return .send(.myPage(.didTappedSubViews(view: .kakaoTalkId)))
             
             case .binding:
                 return .none
