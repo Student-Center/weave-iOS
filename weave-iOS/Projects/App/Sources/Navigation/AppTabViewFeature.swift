@@ -53,6 +53,9 @@ struct AppTabViewFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .onAppear:
+                if UserInfo.myInfo == nil {
+                    return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
+                }
                 return .none
                 
             case .fetchMyUserInfo(let userInfo):
@@ -96,8 +99,11 @@ struct AppTabViewFeature: Reducer {
                 return .none
                 
             case .meetingTeamList(.pushToUnivVerifyView):
-                state.myPage.myUserInfo = UserInfo.myInfo
-                return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
+                if let userInfo = UserInfo.myInfo {
+                    state.myPage.myUserInfo = userInfo
+                    return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
+                }
+                return .none
             
             case .binding:
                 return .none

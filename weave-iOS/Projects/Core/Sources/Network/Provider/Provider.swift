@@ -76,7 +76,6 @@ public class APIProvider {
         var endPointObject = endPoint
         
         if let retry {
-            print(retry.count)
             guard retry.count < 5 else { throw NetworkError.unknownError }
             if let newToken = retry.newToken {
                 endPointObject.headers?["Authorization"] = "Bearer \(newToken)"

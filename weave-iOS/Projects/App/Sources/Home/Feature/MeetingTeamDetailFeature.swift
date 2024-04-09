@@ -159,7 +159,7 @@ struct MeetingTeamDetailFeature: Reducer {
         let requestDTO = RequestMeetingRequestDTO(receivingMeetingTeamId: targetTeamId)
         let endPoint = APIEndpoints.getRequestMeeting(requestDTO: requestDTO)
         let provider = APIProvider()
-        try await provider.requestWithNoResponse(with: endPoint)
+        try await provider.requestWithNoResponse(with: endPoint, successCode: 201)
     }
     
     func requestMatchAction(teamId: String, actionType: MatchActionType) async throws {

@@ -15,7 +15,7 @@ struct MeetingTeamKakaoIdResponseDTO: Decodable {
 
 struct MemberKakaoIdResponseDTO: Decodable {
     let memberId: String
-    let kakaoId: String
+    let kakaoId: String?
 }
 
 extension APIEndpoints {
