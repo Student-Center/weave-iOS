@@ -12,7 +12,20 @@ struct DummyAPI: Decodable {
 }
 
 public class APIProvider {
-    static private(set) var serverType: ServerType = .develop
+    static private(set) var serverType: ServerType = {
+        if let appEnviroment = Bundle.main.infoDictionary?["App Enviroment"] as? String {
+            switch appEnviroment {
+            case "dev":
+                return .develop
+            case "prod":
+                return .release
+            default:
+                break
+            }
+        }
+        assert(false, "App Enviroment가 설정되지 않았습니다")
+        return .release
+    }()
     
     let session: URLSession
     public init(session: URLSession = URLSession.shared) {
@@ -63,6 +76,7 @@ public class APIProvider {
         var endPointObject = endPoint
         
         if let retry {
+            print(retry.count)
             guard retry.count < 5 else { throw NetworkError.unknownError }
             if let newToken = retry.newToken {
                 endPointObject.headers?["Authorization"] = "Bearer \(newToken)"
@@ -87,11 +101,10 @@ public class APIProvider {
             )
             
             try await Task.sleep(nanoseconds: 1_000_000_000)
-            
             return try await request(
                 with: endPoint,
                 showErrorAlert: showErrorAlert,
-                retry: .init(count: (retry?.count) ?? 0 + 1, newToken: newToken)
+                retry: .init(count: ((retry?.count ?? 0) + 1), newToken: newToken)
             )
         }
     }
@@ -130,7 +143,7 @@ public class APIProvider {
                 with: endPoint,
                 successCode: successCode,
                 showErrorAlert: showErrorAlert,
-                retry: .init(count: (retry?.count) ?? 0 + 1, newToken: newToken)
+                retry: .init(count: ((retry?.count ?? 0) + 1), newToken: newToken)
             )
         }
     }
