@@ -36,13 +36,19 @@ struct SettingView: View {
                     Spacer()
                         .frame(height: 12)
                 }
-                Spacer(minLength: 200)
-                HStack {
-                    // TODO: 레이아웃 조정
-                    Text("Version \(appVersion())")
-                    Text("최신버젼")
-                }
+                
                 Spacer()
+                
+                HStack(spacing: 10) {
+                    Text("Ver \(appVersion())")
+                        .font(.pretendard(._500, size: 14))
+                        .foregroundStyle(DesignSystem.Colors.gray400)
+                    Text("최신 버젼")
+                        .font(.pretendard(._600, size: 12))
+                        .foregroundStyle(DesignSystem.Colors.gray600)
+                }
+                .frame(height: 40)
+                .padding(.bottom, 60)
             }
             .padding(.horizontal, 16)
             .navigationTitle("설정")
@@ -68,17 +74,20 @@ struct SettingView: View {
                     viewStore.send(.showUnregisterAlert)
                 }
             )
-            .weaveAlert(
-                isPresented: viewStore.$isShowPasteSuccessAlert,
-                title: "복사",
-                message: "조금만 있으면 새로운 기능들이 추가돼요!\n 한번 더 생각해보시는 건 어떠세요?",
-                primaryButtonTitle: "탈퇴할래요",
-                secondaryButtonTitle: "아니요",
-                primaryAction: {
-
-                }
+            .weaveToast(
+                isShowing: viewStore.$isShowPasteSuccessAlert, 
+                message: "✅ ID가 복사되었어요."
             )
-            // TODO: Weave Toast 추가
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        viewStore.send(.didTappedDismiss)
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                    .foregroundStyle(.white)
+                }
+            }
         }
     }
     
@@ -121,7 +130,8 @@ struct SettingSubSectionView: View {
                 Spacer()
                 
                 if viewType == .myID {
-                    Text("kakaoID")
+                    Text(getClippedID())
+                        .font(.pretendard(._500, size: 14))
                         .foregroundStyle(DesignSystem.Colors.textGray)
                     DesignSystem.Icons.copyID
                         .fontWeight(.semibold)
@@ -135,6 +145,16 @@ struct SettingSubSectionView: View {
             
         }
         .frame(height: 54)
+    }
+    
+    func getClippedID() -> String {
+        let uuid = UserInfo.myInfo?.id ?? ""
+        if let range = uuid.range(of: "-") {
+            let shortUUID = uuid[..<range.lowerBound] + "..."
+            return String(shortUUID)
+        } else {
+            return String(uuid.prefix(8)) + "..."
+        }
     }
 }
 
