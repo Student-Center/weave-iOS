@@ -47,12 +47,10 @@ struct LoginFeature: Reducer {
                 }
                 
             case .didSuccessedLogin:
-//                appCoordinator.changeRoot(to: .mainView)
                 return .none
                 
             case .fetchRegisterToken(let registerToken):
                 state.registerToken = registerToken
-//                appCoordinator.changeRoot(to: .signUpView(registToken: registerToken))
                 return .send(.needRegistUser)
                 
             default:
