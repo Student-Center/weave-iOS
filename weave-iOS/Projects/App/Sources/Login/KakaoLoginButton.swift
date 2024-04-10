@@ -50,6 +50,18 @@ struct KakaoLoginButton: View {
                         onComplte(idToken)
                     }
                 }
+            } 
+        } else {
+            UserApi.shared.loginWithKakaoAccount { oauthToken, error in
+                if let error = error {
+                    print("loginWithKakaoTalk error: \(error)")
+                } else {
+                    print("loginWithKakaoTalk() success.")
+                    if let idToken = oauthToken?.idToken {
+                        print("oauthToken: \(idToken)")
+                        onComplte(idToken)
+                    }
+                }
             }
         }
     }
