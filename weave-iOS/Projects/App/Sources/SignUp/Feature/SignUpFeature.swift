@@ -152,6 +152,7 @@ struct SignUpFeature: Reducer {
                 return .run { send in
                     UDManager.accessToken = tokens.accessToken
                     UDManager.refreshToken = tokens.refreshToken
+                    try await UserInfo.updateUserInfo()
                     await send.callAsFunction(.didCompleteSignUp)
                 }
                 
@@ -208,7 +209,7 @@ struct SignUpFeature: Reducer {
                 return .none
                 
             case .dismissSignUp:
-                coordinator.changeRoot(to: .loginView)
+//                coordinator.changeRoot(to: .loginView)
                 return .none
                 
             default: return .none
