@@ -149,10 +149,12 @@ fileprivate struct MyTeamItemView: View {
                     )
                     locationView(location: teamModel.location)
                     Spacer()
-                    DesignSystem.Icons.menu
-                        .onTapGesture {
-                            isShowTeamEditSheet.toggle()
-                        }
+                    if isMyHostTeam {
+                        DesignSystem.Icons.menu
+                            .onTapGesture {
+                                isShowTeamEditSheet.toggle()
+                            }
+                    }
                 }
                 
                 HStack(alignment: .top) {
