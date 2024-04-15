@@ -134,21 +134,12 @@ struct RequestListView: View {
     
     @ViewBuilder
     func getEmptyView(handler: @escaping () -> Void) -> some View {
-        VStack(alignment: .center, spacing: 10) {
-            Spacer()
-                .frame(height: 200)
-            Text("미팅을 요청해 보세요!")
-                .font(.pretendard(._600, size: 22))
-            Text("아직 받은 요청이 없어요")
-                .font(.pretendard(._500, size: 14))
-                .foregroundStyle(DesignSystem.Colors.gray600)
-            Spacer()
-                .frame(height: 20)
-            WeaveButton(title: "미팅 상대 둘러보기", size: .large) {
-                handler()
-            }
-            .padding(.horizontal, 80)
-        }
+        ListEmptyGuideView(
+            headerTitle: "미팅을 요청해 보세요!",
+            subTitle: "아직 받은 요청이 없어요",
+            buttonTitle: "미팅 상대 둘러보기",
+            buttonHandler: handler
+        )
     }
 }
 

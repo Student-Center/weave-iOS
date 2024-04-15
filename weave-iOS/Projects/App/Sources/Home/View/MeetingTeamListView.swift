@@ -113,21 +113,12 @@ struct MeetingTeamListView: View {
     }
     @ViewBuilder
     func getEmptyView(handler: @escaping () -> Void) -> some View {
-        VStack(spacing: 10) {
-            Spacer()
-                .frame(height: 200)
-            Text("필터를 수정해 보세요!")
-                .font(.pretendard(._600, size: 22))
-            Text("조건에 맞는 미팅 상대팀이 없어요...")
-                .font(.pretendard(._500, size: 14))
-                .foregroundStyle(DesignSystem.Colors.gray600)
-            Spacer()
-                .frame(height: 20)
-            WeaveButton(title: "필터 다시 설정하기", size: .large) {
-                handler()
-            }
-            .padding(.horizontal, 80)
-        }
+        ListEmptyGuideView(
+            headerTitle: "필터를 수정해 보세요!",
+            subTitle: "조건에 맞는 미팅 상대팀이 없어요...",
+            buttonTitle: "필터 다시 설정하기",
+            buttonHandler: handler
+        )
     }
 }
 
