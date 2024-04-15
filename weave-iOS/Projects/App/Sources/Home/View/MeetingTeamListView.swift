@@ -23,26 +23,31 @@ struct MeetingTeamListView: View {
                 VStack {
                     if !viewStore.isNetworkRequested {
                         ProgressView()
-                    } else if viewStore.isNetworkRequested && viewStore.teamList.isEmpty {
-                        // 미팅팀이 없을 때
-                        EmptyView()
                     } else {
                         ScrollView {
-                            LazyVGrid(columns: [column], spacing: 16, content: {
-                                ForEach(viewStore.teamList, id: \.self) { team in
-                                    MeetingListItemView(teamModel: team)
-                                        .onTapGesture {
-                                            viewStore.send(.didTappedTeamView(id: team.id))
-                                        }
+                            // 미팅팀이 없을 때
+                            if viewStore.teamList.isEmpty {
+                                getEmptyView {
+                                    viewStore.send(.didTappedFilterIcon)
                                 }
-                                if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
-                                    ProgressView()
-                                        .onAppear {
-                                            viewStore.send(.requestMeetingTeamListNextPage)
-                                        }
-                                }
-                            })
-                            .padding(.top, 20)
+                            } else {
+                                // 미팅팀 존재
+                                LazyVGrid(columns: [column], spacing: 16, content: {
+                                    ForEach(viewStore.teamList, id: \.self) { team in
+                                        MeetingListItemView(teamModel: team)
+                                            .onTapGesture {
+                                                viewStore.send(.didTappedTeamView(id: team.id))
+                                            }
+                                    }
+                                    if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                                        ProgressView()
+                                            .onAppear {
+                                                viewStore.send(.requestMeetingTeamListNextPage)
+                                            }
+                                    }
+                                })
+                                .padding(.top, 20)
+                            }
                         }
                         .refreshable {
                             viewStore.send(.requestMeetingTeamList)
@@ -104,6 +109,24 @@ struct MeetingTeamListView: View {
                         .presentationDragIndicator(.visible)
                 }
             }
+        }
+    }
+    @ViewBuilder
+    func getEmptyView(handler: @escaping () -> Void) -> some View {
+        VStack(spacing: 10) {
+            Spacer()
+                .frame(height: 200)
+            Text("필터를 수정해 보세요!")
+                .font(.pretendard(._600, size: 22))
+            Text("조건에 맞는 미팅 상대팀이 없어요...")
+                .font(.pretendard(._500, size: 14))
+                .foregroundStyle(DesignSystem.Colors.gray600)
+            Spacer()
+                .frame(height: 20)
+            WeaveButton(title: "필터 다시 설정하기", size: .large) {
+                handler()
+            }
+            .padding(.horizontal, 80)
         }
     }
 }
