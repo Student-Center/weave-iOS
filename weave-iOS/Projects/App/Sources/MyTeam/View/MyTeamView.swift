@@ -94,21 +94,12 @@ struct MyTeamView: View {
     
     @ViewBuilder
     func getEmptyView(handler: @escaping () -> Void) -> some View {
-        VStack(spacing: 10) {
-            Spacer()
-                .frame(height: 200)
-            Text("내 팀을 만들어 보세요!")
-                .font(.pretendard(._600, size: 22))
-            Text("내 팀이 있어야 미팅 요청을 할 수 있어요.")
-                .font(.pretendard(._500, size: 14))
-                .foregroundStyle(DesignSystem.Colors.gray600)
-            Spacer()
-                .frame(height: 20)
-            WeaveButton(title: "내 팀 만들기", size: .large) {
-                handler()
-            }
-            .padding(.horizontal, 80)
-        }
+        ListEmptyGuideView(
+            headerTitle: "내 팀을 만들어 보세요!",
+            subTitle: "내 팀이 있어야 미팅 요청을 할 수 있어요.",
+            buttonTitle: "내 팀 만들기",
+            buttonHandler: handler
+        )
     }
 }
 
@@ -149,10 +140,12 @@ fileprivate struct MyTeamItemView: View {
                     )
                     locationView(location: teamModel.location)
                     Spacer()
-                    DesignSystem.Icons.menu
-                        .onTapGesture {
-                            isShowTeamEditSheet.toggle()
-                        }
+                    if isMyHostTeam {
+                        DesignSystem.Icons.menu
+                            .onTapGesture {
+                                isShowTeamEditSheet.toggle()
+                            }
+                    }
                 }
                 
                 HStack(alignment: .top) {

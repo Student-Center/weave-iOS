@@ -67,6 +67,21 @@ struct AppViewFeature: Reducer {
                 state.mainState?.isShowWelcomeAlert = true
                 return .none
                 
+            // 로그인 성공
+            case .loginAction(.didSuccessedLogin):
+                return .send(.changeRoot(.mainView), animation: .default)
+                
+            // 회원가입 필요
+            case .loginAction(.needRegistUser):
+                if let registerToken = state.loginState?.registerToken {
+                    return .send(.changeRoot(.signUpView(registToken: registerToken)), animation: .default)
+                }
+                return .none
+                
+            // 회원가입 취소 액션
+            case .signUpAction(.dismissSignUp):
+                return .send(.changeRoot(.loginView), animation: .default)
+                
             default:
                 break
             }
