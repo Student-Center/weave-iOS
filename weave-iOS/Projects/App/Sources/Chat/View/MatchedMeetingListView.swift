@@ -19,7 +19,7 @@ struct MatchedMeetingListView: View {
             NavigationView {
                 VStack {
                     if !viewStore.isNetworkRequested {
-                        ProgressView()
+                        WeaveIndicator(animated: true)
                     } else {
                         ScrollView {
                             if viewStore.teamList.isEmpty {
@@ -36,7 +36,7 @@ struct MatchedMeetingListView: View {
                                             }
                                     }
                                     if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
-                                        ProgressView()
+                                        WeaveIndicator(animated: true)
                                             .onAppear {
                                                 viewStore.send(.requestMeetingTeamListNextPage)
                                             }

@@ -24,7 +24,7 @@ struct RequestListView: View {
                 TabView(selection: $selection) {
                     VStack {
                         if !viewStore.isReceiveDataRequested {
-                            ProgressView()
+                            WeaveIndicator(animated: true)
                         } else {
                             getMeetingListView(
                                 type: .receiving,
@@ -53,7 +53,7 @@ struct RequestListView: View {
                     
                     VStack {
                         if !viewStore.isSentDataRequested {
-                            ProgressView()
+                            WeaveIndicator(animated: true)
                         } else {
                             getMeetingListView(
                                 type: .requesting,
@@ -117,7 +117,7 @@ struct RequestListView: View {
                             }
                     }
                     if !dataSources.isEmpty && needShowNextPage {
-                        ProgressView()
+                        WeaveIndicator(animated: true)
                             .onAppear {
                                 nextPageHandler(type)
                             }

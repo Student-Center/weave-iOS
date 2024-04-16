@@ -20,7 +20,7 @@ struct MyTeamView: View {
             NavigationView {
                 VStack {
                     if !viewStore.didDataFetched {
-                        ProgressView()
+                        WeaveIndicator(animated: true)
                     }  else {
                         ScrollView {
                             if viewStore.myTeamList.isEmpty {
@@ -34,7 +34,7 @@ struct MyTeamView: View {
                                     }
                                     
                                     if !viewStore.myTeamList.isEmpty && viewStore.nextCallId != nil {
-                                        ProgressView()
+                                        WeaveIndicator(animated: true)
                                             .onAppear {
                                                 viewStore.send(.requestMyTeamListNextPage)
                                             }
