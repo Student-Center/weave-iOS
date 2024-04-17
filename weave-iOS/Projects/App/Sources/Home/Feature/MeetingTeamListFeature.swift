@@ -16,7 +16,7 @@ struct MeetingTeamListFeature: Reducer {
         @BindingState var teamList = [MeetingTeamModel]()
         
         var nextCallId: String?
-        var isNetworkRequested = false
+        @BindingState var isNetworkRequested = true
         var filterModel = MeetingTeamFilterModel()
         @PresentationState var destination: Destination.State?
     }
@@ -44,7 +44,7 @@ struct MeetingTeamListFeature: Reducer {
             switch action {
             case .requestMeetingTeamList:
                 state.teamList = []
-                state.isNetworkRequested = false
+                state.isNetworkRequested = true
                 state.nextCallId = nil
                 return .run { [filter = state.filterModel] send in
                     let response = try await requestMeetingTeamList(filter: filter)
@@ -64,7 +64,7 @@ struct MeetingTeamListFeature: Reducer {
                 }
                 
             case .fetchMeetingTeamList(let response):
-                state.isNetworkRequested = true
+                state.isNetworkRequested = false
                 state.teamList.append(contentsOf: response.toDomain.items)
                 state.nextCallId = response.next
                 return .none
@@ -86,7 +86,7 @@ struct MeetingTeamListFeature: Reducer {
                 }
                 state.destination = nil
                 state.teamList = []
-                state.isNetworkRequested = false
+                state.isNetworkRequested = true
                 state.nextCallId = nil
                 return .run { send in
                     await send.callAsFunction(.requestMeetingTeamList)

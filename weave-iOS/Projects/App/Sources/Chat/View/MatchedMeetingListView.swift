@@ -18,36 +18,32 @@ struct MatchedMeetingListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
                 VStack {
-                    if !viewStore.isNetworkRequested {
-                        WeaveIndicator(animated: true)
-                    } else {
-                        ScrollView {
-                            if viewStore.teamList.isEmpty {
-                                getEmptyView {
-                                    viewStore.send(.didTappedLookAroundMeetingList)
-                                }
-                            } else {
-                                LazyVGrid(columns: [column], spacing: 16, content: {
-                                    ForEach(viewStore.teamList, id: \.id) { team in
-                                        MeetingListItemView(teamModel: team.otherTeam)
-                                            .contentShape(Rectangle())
-                                            .onTapGesture {
-                                                viewStore.send(.didTappedTeamView(team: team))
-                                            }
-                                    }
-                                    if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
-                                        WeaveIndicator(animated: true)
-                                            .onAppear {
-                                                viewStore.send(.requestMeetingTeamListNextPage)
-                                            }
-                                    }
-                                })
-                                .padding(.top, 20)
+                    ScrollView {
+                        if viewStore.teamList.isEmpty {
+                            getEmptyView {
+                                viewStore.send(.didTappedLookAroundMeetingList)
                             }
+                        } else {
+                            LazyVGrid(columns: [column], spacing: 16, content: {
+                                ForEach(viewStore.teamList, id: \.id) { team in
+                                    MeetingListItemView(teamModel: team.otherTeam)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            viewStore.send(.didTappedTeamView(team: team))
+                                        }
+                                }
+                                if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                                    ProgressView()
+                                        .onAppear {
+                                            viewStore.send(.requestMeetingTeamListNextPage)
+                                        }
+                                }
+                            })
+                            .padding(.top, 20)
                         }
-                        .refreshable {
-                            viewStore.send(.requestMeetingTeamList)
-                        }
+                    }
+                    .refreshable {
+                        viewStore.send(.requestMeetingTeamList)
                     }
                 }
                 .onLoad {
@@ -60,6 +56,7 @@ struct MatchedMeetingListView: View {
                 ) { store in
                     MeetingMatchProfileView(store: store)
                 }
+                .weaveIndicator(isShowing: viewStore.$isNetworkRequested)
                 .toolbar(content: {
                     ToolbarItem(placement: .topBarLeading) {
                         Text("매칭")

@@ -16,7 +16,7 @@ struct MatchedMeetingListFeature: Reducer {
     struct State: Equatable {
         @BindingState var teamList = [MatchedMeetingTeamInfo]()
         var nextCallId: String?
-        var isNetworkRequested = false
+        @BindingState var isNetworkRequested = true
         @PresentationState var destination: Destination.State?
     }
     
@@ -58,7 +58,7 @@ struct MatchedMeetingListFeature: Reducer {
                 }
             case .requestMeetingTeamList:
                 state.teamList = []
-                state.isNetworkRequested = false
+                state.isNetworkRequested = true
                 state.nextCallId = nil
                 return .run { send in
                     let response = try await requestMatchedTeamList(nextId: nil)
@@ -68,10 +68,10 @@ struct MatchedMeetingListFeature: Reducer {
                     print(error)
                 }
             case .networkRequestError:
-                state.isNetworkRequested = true
+                state.isNetworkRequested = false
                 return .none
             case .fetchMeetingTeamList(let response):
-                state.isNetworkRequested = true
+                state.isNetworkRequested = false
                 state.teamList.append(contentsOf: response.toDomain.items)
                 state.nextCallId = response.next
                 return .none

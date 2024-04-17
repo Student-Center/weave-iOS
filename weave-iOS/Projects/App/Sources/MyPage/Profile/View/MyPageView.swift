@@ -158,7 +158,7 @@ fileprivate struct MyProfileHeaderSectionView: View {
                         if let profileURL = viewStore.myUserInfo?.avatar {
                             KFImage(URL(string: profileURL))
                                 .placeholder{
-                                    WeaveIndicator(animated: true)
+                                    ProgressView()
                                 }
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
