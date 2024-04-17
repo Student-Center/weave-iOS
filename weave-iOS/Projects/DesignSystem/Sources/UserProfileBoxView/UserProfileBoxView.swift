@@ -92,7 +92,7 @@ public struct UserProfileBoxView: View {
                 if let profileImage = config.profileImage {
                     KFImage(URL(string: profileImage))
                         .placeholder{
-                            WeaveIndicator(animated: true)
+                            ProgressView()
                         }
                         .resizable()
                         .aspectRatio(contentMode: .fill)

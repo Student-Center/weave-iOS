@@ -8,10 +8,10 @@
 import SwiftUI
 
 public struct WeaveIndicator: View {
-    private var animated: Bool
+    @Binding var animated: Bool
     
-    public init(animated: Bool) {
-        self.animated = animated
+    public init(animated: Binding<Bool>) {
+        self._animated = animated
     }
     
     public var body: some View {
@@ -61,5 +61,5 @@ public extension BinaryFloatingPoint {
 }
 
 #Preview {
-    WeaveIndicator(animated: true)
+    WeaveIndicator(animated: .constant(true))
 }
