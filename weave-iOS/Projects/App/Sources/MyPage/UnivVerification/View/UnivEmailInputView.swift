@@ -68,11 +68,10 @@ struct UnivEmailInputView: View {
                     message: "이메일 전송에 실패했어요.\n이메일 주소를 다시 확인해주세요",
                     primaryButtonTitle: "다시 시도할께요"
                 )
+                .weaveIndicator(isShowing: viewStore.$isNetworkRequested)
             }
             .onAppear {
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    viewStore.send(.requestUniversityInfo)
-//                }
+                viewStore.send(.requestUniversityInfo)
                 UIApplication.shared.hideKeyboard()
             }
             .navigationBarBackButtonHidden()
