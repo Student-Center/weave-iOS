@@ -44,45 +44,42 @@ public extension LinearGradient {
  */
 public extension Array where Element == Color {
     func colorAtPoint(at point: CGFloat) -> Color {
-
+        
         let count = CGFloat(self.count)
         let step = 1.0 / (count - 1)
-
+        
         let currentIndex = Swift.min(Swift.max(Int(point / step), 0), self.count - 2)
         let nextIndex = currentIndex + 1
-
+        
         let currentPosition = step * CGFloat(currentIndex)
         let nextPosition = step * CGFloat(nextIndex)
-
+        
         let percentageDiff = (point - currentPosition) / (nextPosition - currentPosition)
-
+        
         // 현재 및 다음 색상 구하기
         let currentColor = self[currentIndex]
         let nextColor = self[nextIndex]
-
-        // UIColor로 변환
-        let currentUIColor = UIColor(currentColor)
-        let nextUIColor = UIColor(nextColor)
-
+        // CIColor로 변환
+        let currentCIColor = CIColor(color: UIColor(currentColor))
+        let nextCIColor = CIColor(color: UIColor(nextColor))
+        
         // 컴포넌트 추출
-        var currentRed: CGFloat = 0, 
-            currentGreen: CGFloat = 0,
-            currentBlue: CGFloat = 0,
-            currentAlpha: CGFloat = 0
-        currentUIColor.getRed(&currentRed, green: &currentGreen, blue: &currentBlue, alpha: &currentAlpha)
-
-        var nextRed: CGFloat = 0, 
-            nextGreen: CGFloat = 0,
-            nextBlue: CGFloat = 0,
-            nextAlpha: CGFloat = 0
-        nextUIColor.getRed(&nextRed, green: &nextGreen, blue: &nextBlue, alpha: &nextAlpha)
-
+        let currentRed = currentCIColor.red
+        let currentGreen = currentCIColor.green
+        let currentBlue = currentCIColor.blue
+        let currentAlpha = currentCIColor.alpha
+        
+        let nextRed = nextCIColor.red
+        let nextGreen = nextCIColor.green
+        let nextBlue = nextCIColor.blue
+        let nextAlpha = nextCIColor.alpha
+        
         // 색상 보정 및 RGBA 구하기
         let red = currentRed + (nextRed - currentRed) * percentageDiff
         let green = currentGreen + (nextGreen - currentGreen) * percentageDiff
         let blue = currentBlue + (nextBlue - currentBlue) * percentageDiff
         let alpha = currentAlpha + (nextAlpha - currentAlpha) * percentageDiff
-
+        
         return Color(red: Double(red), green: Double(green), blue: Double(blue), opacity: Double(alpha))
     }
 }
