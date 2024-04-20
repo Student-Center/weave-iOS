@@ -75,7 +75,7 @@ struct AppTabViewFeature: Reducer {
                 
             case .processWithInvitedTeamInfo(let invitedTeam):
                 state.invitedTeamInfo = invitedTeam
-                state.isShowInvitationConfirmAlert.toggle()
+                state.isShowInvitationConfirmAlert = true
                 return .none
                 
             case .didTappedAcceptInvitation:
