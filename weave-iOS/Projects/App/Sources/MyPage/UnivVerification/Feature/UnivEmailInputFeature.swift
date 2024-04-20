@@ -19,7 +19,7 @@ struct UnivEmailInputFeature: Reducer {
         @BindingState var isShowEmailSendAlert = false
         @BindingState var isShowEmailSendErrorAlert = false
         
-        @BindingState var isNetworkRequested = false
+        var isNetworkRequested = false
         
         @PresentationState var destination: Destination.State?
     }
