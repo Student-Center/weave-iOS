@@ -54,7 +54,9 @@ struct AppTabViewFeature: Reducer {
             switch action {
             case .onAppear:
                 if UserInfo.myInfo == nil {
-                    return .send(.myPage(.didTappedSubViews(view: .emailVerification)))
+                    return .run { send in
+                        try await UserInfo.updateUserInfo()
+                    }
                 }
                 return .none
                 

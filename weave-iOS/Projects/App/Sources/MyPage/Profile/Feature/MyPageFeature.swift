@@ -44,6 +44,7 @@ struct MyPageFeature: Reducer {
         case showAppPreference
         case didPickPhotoCompleted(image: UIImage)
         case destination(PresentationAction<Destination.Action>)
+        case pushUnivVerifyView
         // bind
         case binding(BindingAction<State>)
     }
@@ -115,10 +116,16 @@ struct MyPageFeature: Reducer {
                         state.isShowCompleteUnivVerifyView.toggle()
                         return .none
                     }
-                    state.destination = .univVerify(.init(universityName: state.myUserInfo?.universityName ?? ""))
-                    return .none
+                    return .run { send in
+                        try await checkUserInfo()
+                        await send.callAsFunction(.pushUnivVerifyView)
+                    }
                 }
                 
+                return .none
+                
+            case .pushUnivVerifyView:
+                state.destination = .univVerify(.init(universityName: state.myUserInfo?.universityName ?? ""))
                 return .none
                 
             case .destination(.dismiss):
@@ -196,6 +203,12 @@ struct MyPageFeature: Reducer {
         }
         .ifLet(\.$destination, action: /Action.destination) {
             Destination()
+        }
+    }
+    
+    func checkUserInfo() async throws {
+        if UserInfo.myInfo?.universityName == nil {
+            try await UserInfo.updateUserInfo()
         }
     }
     
