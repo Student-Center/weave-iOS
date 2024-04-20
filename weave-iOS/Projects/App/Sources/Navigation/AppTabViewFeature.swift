@@ -92,7 +92,7 @@ struct AppTabViewFeature: Reducer {
                 
             case .didSuccessEnterTeam:
                 tabViewCoordinator.changeTab(to: .myTeam)
-                return .none
+                return .send(.myTeamList(.requestMyTeamList))
                 
             case .didTappedCancelInvitation:
                 state.invitedTeamInfo = nil
