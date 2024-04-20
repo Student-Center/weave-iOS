@@ -212,7 +212,7 @@ fileprivate struct MyTeamItemView: View {
             .weaveAlert(
                 isPresented: $isShowDeleteConfirmAlert,
                 title: "\(teamModel.teamIntroduce)팀을\n삭제하시겠어요?",
-                message: isTeamCompleted ? "팀을 삭제하시면 진행중인 미팅 요청과 매칭이 자동 취소돼요!" : nil,
+                message: isTeamCompleted ? "지금 팀을 나가시면 팀이 삭제되고 모든 미팅 요청과 매칭이 자동 취소돼요!" : nil,
                 primaryButtonTitle: "삭제할래요",
                 primaryButtonColor: DesignSystem.Colors.notificationRed,
                 secondaryButtonTitle: "아니요",
