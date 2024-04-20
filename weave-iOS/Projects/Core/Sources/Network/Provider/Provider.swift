@@ -13,18 +13,12 @@ struct DummyAPI: Decodable {
 
 public class APIProvider {
     static private(set) var serverType: ServerType = {
-        if let appEnviroment = Bundle.main.infoDictionary?["App Enviroment"] as? String {
-            switch appEnviroment {
-            case "dev":
-                return .develop
-            case "prod":
-                return .release
-            default:
-                break
-            }
+        if let appEnviroment = Bundle.main.infoDictionary?["App Enviroment"] as? String,
+           let serverType = ServerType(rawValue: appEnviroment) {
+            return serverType
         }
         assert(false, "App Enviroment가 설정되지 않았습니다")
-        return .release
+        return .prod
     }()
     
     let session: URLSession
