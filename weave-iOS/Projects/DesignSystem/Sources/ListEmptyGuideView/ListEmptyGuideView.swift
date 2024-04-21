@@ -12,25 +12,26 @@ public struct ListEmptyGuideView: View {
     let headerTitle: String
     let subTitle: String?
     let buttonTitle: String?
+    var viewSize: CGSize
     var buttonHandler: (() -> Void)?
     
     public init(
         headerTitle: String,
         subTitle: String? = nil,
         buttonTitle: String? = nil,
+        viewSize: CGSize,
         buttonHandler: (() -> Void)? = nil
     ) {
         self.headerTitle = headerTitle
         self.subTitle = subTitle
         self.buttonTitle = buttonTitle
+        self.viewSize = viewSize
         self.buttonHandler = buttonHandler
     }
     
     
     public var body: some View {
         VStack(spacing: 10) {
-            Spacer()
-                .frame(height: 200)
             Text(headerTitle)
                 .font(.pretendard(._600, size: 22))
                 .multilineTextAlignment(.center)
@@ -49,5 +50,6 @@ public struct ListEmptyGuideView: View {
                 .padding(.horizontal, 80)
             }
         }
+        .frame(height: viewSize.height)
     }
 }

@@ -24,33 +24,35 @@ struct MeetingTeamListView: View {
                     if !viewStore.isNetworkRequested {
                         ProgressView()
                     } else {
-                        ScrollView {
-                            // 미팅팀이 없을 때
-                            if viewStore.teamList.isEmpty {
-                                getEmptyView {
-                                    viewStore.send(.didTappedFilterIcon)
+                        GeometryReader { geometry in
+                            ScrollView {
+                                // 미팅팀이 없을 때
+                                if viewStore.teamList.isEmpty {
+                                    getEmptyView(viewSize: geometry.size) {
+                                        viewStore.send(.didTappedFilterIcon)
+                                    }
+                                } else {
+                                    // 미팅팀 존재
+                                    LazyVGrid(columns: [column], spacing: 16, content: {
+                                        ForEach(viewStore.teamList, id: \.self) { team in
+                                            MeetingListItemView(teamModel: team)
+                                                .onTapGesture {
+                                                    viewStore.send(.didTappedTeamView(id: team.id))
+                                                }
+                                        }
+                                        if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                                            ProgressView()
+                                                .onAppear {
+                                                    viewStore.send(.requestMeetingTeamListNextPage)
+                                                }
+                                        }
+                                    })
+                                    .padding(.top, 20)
                                 }
-                            } else {
-                                // 미팅팀 존재
-                                LazyVGrid(columns: [column], spacing: 16, content: {
-                                    ForEach(viewStore.teamList, id: \.self) { team in
-                                        MeetingListItemView(teamModel: team)
-                                            .onTapGesture {
-                                                viewStore.send(.didTappedTeamView(id: team.id))
-                                            }
-                                    }
-                                    if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
-                                        ProgressView()
-                                            .onAppear {
-                                                viewStore.send(.requestMeetingTeamListNextPage)
-                                            }
-                                    }
-                                })
-                                .padding(.top, 20)
                             }
-                        }
-                        .refreshable {
-                            viewStore.send(.requestMeetingTeamList)
+                            .refreshable {
+                                viewStore.send(.requestMeetingTeamList)
+                            }
                         }
                     }
                 }
@@ -112,11 +114,12 @@ struct MeetingTeamListView: View {
         }
     }
     @ViewBuilder
-    func getEmptyView(handler: @escaping () -> Void) -> some View {
+    func getEmptyView(viewSize: CGSize, handler: @escaping () -> Void) -> some View {
         ListEmptyGuideView(
             headerTitle: "필터를 수정해 보세요!",
             subTitle: "조건에 맞는 미팅 상대팀이 없어요...",
             buttonTitle: "필터 다시 설정하기",
+            viewSize: viewSize,
             buttonHandler: handler
         )
     }

@@ -41,7 +41,9 @@ struct RequestListFeature: Reducer {
     
     var body: some ReducerOf<Self> {
         BindingReducer()
-        Reduce { state, action in
+        Reduce {
+            state,
+            action in
             switch action {
             case .didTappedMeetingView(let index, let type):
                 switch type {
@@ -77,7 +79,7 @@ struct RequestListFeature: Reducer {
             case .didTappedLookAroundMeetingList:
                 tabViewCoordinator.changeTab(to: .home)
                 return .none
-
+                
             case .processRequestError(let type):
                 switch type {
                 case .receiving:
@@ -90,7 +92,7 @@ struct RequestListFeature: Reducer {
             case .destination(.dismiss):
                 state.destination = nil
                 return .none
-
+                
             case .binding(_):
                 return .none
                 
