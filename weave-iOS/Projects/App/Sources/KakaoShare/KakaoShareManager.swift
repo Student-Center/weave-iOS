@@ -46,16 +46,16 @@ class KakaoShareManager {
                         "title": "[WEAVE] 친구야 같이 미팅하자",
                         "image_url": "\(SecretKey.serverResourcePath)/share_image.png",
                         "link": {
-                                "androidExecutionParams": "type=invitation&code=\(code)",
-                                "ios_execution_params": "type=invitation&code=\(code)"
+                                "androidExecutionParams": "type=invitation&code=\(code)&userId=\(UserInfo.myInfo?.id ?? "")",
+                                "ios_execution_params": "type=invitation&code=\(code)&userId=\(UserInfo.myInfo?.id ?? "")"
                         },
                     },
                     "buttons": [
                         {
                             "title": "초대장 확인하기",
                             "link": {
-                                "ios_execution_params": "type=invitation&code=\(code)",
-                                "androidExecutionParams": "type=invitation&code=\(code)"
+                                "ios_execution_params": "type=invitation&code=\(code)&userId=\(UserInfo.myInfo?.id ?? "")",
+                                "androidExecutionParams": "type=invitation&code=\(code)&userId=\(UserInfo.myInfo?.id ?? "")"
                             }
                         }
                     ]

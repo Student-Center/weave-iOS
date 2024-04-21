@@ -103,9 +103,15 @@ struct AppTabView: View {
                 
                 let type = queryItems.first { $0.name == "type" }?.value
                 let code = queryItems.first { $0.name == "code" }?.value
+                let userId = queryItems.first { $0.name == "userId" }?.value
                 
                 if type == "invitation", 
                     let invitationCode = code {
+                    // 내 자신의 초대장일 때
+                    if userId == UserInfo.myInfo?.id {
+                        tabViewCoordinator.changeTab(to: .myTeam)
+                        return
+                    }
                     viewStore.send(.didInvitationReceived(invitationCode: invitationCode))
                 }
             }
