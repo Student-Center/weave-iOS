@@ -69,7 +69,10 @@ struct AppViewFeature: Reducer {
                 
             // 로그인 성공
             case .loginAction(.didSuccessedLogin):
-                return .send(.changeRoot(.mainView), animation: .default)
+                return .run { send in
+                    try await UserInfo.updateUserInfo()
+                    await send.callAsFunction(.changeRoot(.mainView), animation: .default)
+                }
                 
             // 회원가입 필요
             case .loginAction(.needRegistUser):

@@ -35,7 +35,6 @@ struct LoginFeature: Reducer {
             case .didTappedLoginButton(let idToken, let type):
                 return .run { send in
                     try await requestSNSLogin(idToken: idToken, with: type)
-                    try await UserInfo.updateUserInfo()
                     await send.callAsFunction(.didSuccessedLogin)
                 } catch: { error, send in
                     switch error as? LoginNetworkError {
