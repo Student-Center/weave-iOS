@@ -61,10 +61,10 @@ struct MeetingTeamListView: View {
                 }
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
-                        DesignSystem.Icons.appLogo
+                        DesignSystem.Icons.appTextLogo
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(height: 20)
+                            .frame(height: 30)
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button(
