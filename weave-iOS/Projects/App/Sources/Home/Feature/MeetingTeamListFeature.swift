@@ -14,6 +14,7 @@ struct MeetingTeamListFeature: Reducer {
     
     struct State: Equatable {
         @BindingState var teamList = [MeetingTeamModel]()
+        @BindingState var isShowShareWeaveSheet = false
         
         var nextCallId: String?
         var isNetworkRequested = false
@@ -29,6 +30,7 @@ struct MeetingTeamListFeature: Reducer {
         //MARK: UserAction
         case didTappedTeamView(id: String)
         case didTappedFilterIcon
+        case didTappedShareWeaveButton
         
         // destination
         case destination(PresentationAction<Destination.Action>)
@@ -76,6 +78,10 @@ struct MeetingTeamListFeature: Reducer {
               
             case .didTappedFilterIcon:
                 state.destination = .filter(.init(filterModel: state.filterModel))
+                return .none
+                
+            case .didTappedShareWeaveButton:
+                state.isShowShareWeaveSheet = true
                 return .none
                 
             // Filter 선택 완료 이후

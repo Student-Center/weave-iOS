@@ -28,8 +28,20 @@ struct MeetingTeamListView: View {
                             ScrollView {
                                 // 미팅팀이 없을 때
                                 if viewStore.teamList.isEmpty {
-                                    getEmptyView(viewSize: geometry.size) {
-                                        viewStore.send(.didTappedFilterIcon)
+                                    // 필터 미 적용 상태일 때 - WEAVE 공유
+                                    if viewStore.filterModel == MeetingTeamFilterModel() {
+                                        getShareEmptyView(
+                                            viewSize: geometry.size
+                                        ) {
+                                            viewStore.send(.didTappedShareWeaveButton)
+                                        }
+                                    } else {
+                                        // 필터 적용 상태일 때 - 필터 재적용 안내
+                                        getFilterEmptyView(
+                                            viewSize: geometry.size
+                                        ) {
+                                            viewStore.send(.didTappedFilterIcon)
+                                        }
                                     }
                                 } else {
                                     // 미팅팀 존재
@@ -110,15 +122,35 @@ struct MeetingTeamListView: View {
                         .presentationDetents([.fraction(0.8)])
                         .presentationDragIndicator(.visible)
                 }
+                .background(
+                    ActivityView(
+                        isPresented: viewStore.$isShowShareWeaveSheet,
+                        activityItmes: [
+                            AppConstant.weaveShareMessage
+                        ]
+                    )
+                )
             }
         }
     }
+    
     @ViewBuilder
-    func getEmptyView(viewSize: CGSize, handler: @escaping () -> Void) -> some View {
+    func getFilterEmptyView(viewSize: CGSize, handler: @escaping () -> Void) -> some View {
         ListEmptyGuideView(
             headerTitle: "필터를 수정해 보세요!",
             subTitle: "조건에 맞는 미팅 상대팀이 없어요...",
             buttonTitle: "필터 다시 설정하기",
+            viewSize: viewSize,
+            buttonHandler: handler
+        )
+    }
+    
+    @ViewBuilder
+    func getShareEmptyView(viewSize: CGSize, handler: @escaping () -> Void) -> some View {
+        ListEmptyGuideView(
+            headerTitle: "매칭할 수 있는 팀이 없어요 😢",
+            subTitle: "더 많은 친구들이 이용할 수 있도록\n친구들에게 공유해 주세요!",
+            buttonTitle: "WEAVE 공유하기",
             viewSize: viewSize,
             buttonHandler: handler
         )
