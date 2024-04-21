@@ -21,9 +21,8 @@ struct MeetingTeamListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
                 VStack {
-                    if !viewStore.isNetworkRequested && viewStore.teamList.isEmpty {
-                        // 미팅팀이 없을 때
-                        EmptyView()
+                    if !viewStore.isNetworkRequested {
+                        ProgressView()
                     } else {
                         ScrollView {
                             // 미팅팀이 없을 때
@@ -109,7 +108,6 @@ struct MeetingTeamListView: View {
                         .presentationDetents([.fraction(0.8)])
                         .presentationDragIndicator(.visible)
                 }
-                .weaveIndicator(isShowing: viewStore.$isNetworkRequested)
             }
         }
     }
