@@ -20,6 +20,7 @@ struct RequestListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack {
                 SegmentedPicker(items: self.items, selection: self.$selection)
+                    .padding(.top, 16)
                     .frame(width: 210)
                 TabView(selection: $selection) {
                     VStack {
@@ -103,29 +104,32 @@ struct RequestListView: View {
         lookAroundMeetingListHandler: @escaping () -> Void
     ) -> some View {
         VStack {
-            ScrollView {
-                if dataSources.isEmpty {
-                    getEmptyView() {
-                        lookAroundMeetingListHandler()
-                    }
-                } else {
-                    ForEach(0 ..< dataSources.count, id: \.self) { index in
-                        let meeting = dataSources[index]
-                        MeetingItemView(meeting: meeting, type: type)
-                            .onTapGesture {
-                                tapHandler(index)
-                            }
-                    }
-                    if !dataSources.isEmpty && needShowNextPage {
-                        ProgressView()
-                            .onAppear {
-                                nextPageHandler(type)
-                            }
+            GeometryReader { geometry in
+                ScrollView {
+                    if dataSources.isEmpty {
+                        getEmptyView(viewSize: geometry.size) {
+                            print(geometry.size.height)
+                            lookAroundMeetingListHandler()
+                        }
+                    } else {
+                        ForEach(0 ..< dataSources.count, id: \.self) { index in
+                            let meeting = dataSources[index]
+                            MeetingItemView(meeting: meeting, type: type)
+                                .onTapGesture {
+                                    tapHandler(index)
+                                }
+                        }
+                        if !dataSources.isEmpty && needShowNextPage {
+                            ProgressView()
+                                .onAppear {
+                                    nextPageHandler(type)
+                                }
+                        }
                     }
                 }
-            }
-            .refreshable {
-                scrollRefreshHandler(type)
+                .refreshable {
+                    scrollRefreshHandler(type)
+                }
             }
         }
         .padding(.vertical, 20)
@@ -133,13 +137,15 @@ struct RequestListView: View {
     }
     
     @ViewBuilder
-    func getEmptyView(handler: @escaping () -> Void) -> some View {
+    func getEmptyView(viewSize: CGSize, handler: @escaping () -> Void) -> some View {
         ListEmptyGuideView(
             headerTitle: "미팅을 요청해 보세요!",
             subTitle: "아직 받은 요청이 없어요",
             buttonTitle: "미팅 상대 둘러보기",
+            viewSize: viewSize,
             buttonHandler: handler
         )
+        .offset(y: -13.5)
     }
 }
 
