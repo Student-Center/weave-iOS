@@ -39,6 +39,7 @@ struct MyTeamFeature: Reducer {
         case fetchInviteLink(dto: MyTeamInviteResponseDTO)
       
         case requestDeleteTeam(teamId: String)
+        case requestLeaveTeam(teamId: String)
         
         case destination(PresentationAction<Destination.Action>)
         // bind
@@ -111,9 +112,16 @@ struct MyTeamFeature: Reducer {
                 return .none
                 
             case .requestDeleteTeam(let teamId):
-                print(teamId)
                 return .run { send in
                     try await requestDeleteTeamById(teamId: teamId)
+                    await send.callAsFunction(.requestMyTeamList)
+                } catch: { error, send in
+                    print(error)
+                }
+                
+            case .requestLeaveTeam(let teamId):
+                return .run { send in
+                    try await requestLeaveTeam(teamId: teamId)
                     await send.callAsFunction(.requestMyTeamList)
                 } catch: { error, send in
                     print(error)
@@ -153,6 +161,12 @@ struct MyTeamFeature: Reducer {
     
     func requestDeleteTeamById(teamId: String) async throws {
         let endPoint = APIEndpoints.deleteMyTeam(teamId: teamId)
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint)
+    }
+    
+    func requestLeaveTeam(teamId: String) async throws {
+        let endPoint = APIEndpoints.leaveTeam(teamId: teamId)
         let provider = APIProvider()
         try await provider.requestWithNoResponse(with: endPoint)
     }

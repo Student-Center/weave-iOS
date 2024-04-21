@@ -108,6 +108,7 @@ fileprivate struct MyTeamItemView: View {
     let teamModel: MyTeamItemModel
     @State var isShowTeamEditSheet = false
     @State var isShowDeleteConfirmAlert = false
+    @State var isShowLeaveConfirmAlert = false
     
     var sortedTeamMember: [MyTeamMemberModel] {
         return teamModel.memberInfos.sorted { $0.role.sortValue < $1.role.sortValue }
@@ -140,12 +141,10 @@ fileprivate struct MyTeamItemView: View {
                     )
                     locationView(location: teamModel.location)
                     Spacer()
-                    if isMyHostTeam {
-                        DesignSystem.Icons.menu
-                            .onTapGesture {
-                                isShowTeamEditSheet.toggle()
-                            }
-                    }
+                    DesignSystem.Icons.menu
+                        .onTapGesture {
+                            isShowTeamEditSheet.toggle()
+                        }
                 }
                 
                 HStack(alignment: .top) {
@@ -176,18 +175,35 @@ fileprivate struct MyTeamItemView: View {
                 }
             }
             .confirmationDialog("", isPresented: $isShowTeamEditSheet) {
-                Button("내 팀 수정하기") {
-                    viewStore.send(.didTappedModifyMyTeam(team: teamModel))
-                }
-                Button("삭제하기", role: .destructive) {
-                    isShowDeleteConfirmAlert.toggle()
+                if isMyHostTeam {
+                    Button("내 팀 수정하기") {
+                        viewStore.send(.didTappedModifyMyTeam(team: teamModel))
+                    }
+                    Button("삭제하기", role: .destructive) {
+                        isShowDeleteConfirmAlert.toggle()
+                    }
+                } else {
+                    Button("나가기", role: .destructive) {
+                        isShowLeaveConfirmAlert.toggle()
+                    }
                 }
                 Button("닫기", role: .cancel) {}
             }
             .weaveAlert(
+                isPresented: $isShowLeaveConfirmAlert,
+                title: "\(teamModel.teamIntroduce)팀을\n나가시겠어요?",
+                message: isTeamCompleted ? "팀을 나가시면 진행중인 미팅 요청과 매칭이 자동 취소돼요!" : nil,
+                primaryButtonTitle: "나갈래요",
+                primaryButtonColor: DesignSystem.Colors.notificationRed,
+                secondaryButtonTitle: "아니요",
+                primaryAction: {
+                    viewStore.send(.requestLeaveTeam(teamId: teamModel.id))
+                }
+            )
+            .weaveAlert(
                 isPresented: $isShowDeleteConfirmAlert,
                 title: "\(teamModel.teamIntroduce)팀을\n삭제하시겠어요?",
-                message: isTeamCompleted ? "팀을 삭제하시면 진행중인 미팅 요청과 매칭이 자동 취소돼요!" : nil,
+                message: isTeamCompleted ? "지금 팀을 나가시면 팀이 삭제되고 모든 미팅 요청과 매칭이 자동 취소돼요!" : nil,
                 primaryButtonTitle: "삭제할래요",
                 primaryButtonColor: DesignSystem.Colors.notificationRed,
                 secondaryButtonTitle: "아니요",
