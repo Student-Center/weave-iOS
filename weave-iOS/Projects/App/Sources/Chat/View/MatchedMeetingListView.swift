@@ -73,7 +73,7 @@ struct MatchedMeetingListView: View {
     @ViewBuilder
     func getEmptyView(handler: @escaping () -> Void) -> some View {
         ListEmptyGuideView(
-            headerTitle: "🙏\n미팅을 요청해 보세요!",
+            headerTitle: "미팅을 요청해 보세요!",
             subTitle: "미팅을 요청해야 매칭이 시작돼요!",
             buttonTitle: "미팅 상대 둘러보기",
             buttonHandler: handler
