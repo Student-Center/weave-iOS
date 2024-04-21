@@ -70,7 +70,10 @@ public func setEnviroment(to env: AppEnviroment) -> SettingsDictionary {
 let project = Project(
     name: "Weave-ios",
     organizationName: nil,
-    options: .options(),
+    options: .options(
+        defaultKnownRegions: ["ko"],
+        developmentRegion: "ko"
+    ),
     packages: [
         .remote(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git",
