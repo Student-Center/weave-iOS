@@ -23,21 +23,36 @@ struct AppSuggestionView: View {
                             Text("여러분의 의견은 위브에 아주 큰 도움이 돼요!")
                                 .font(.pretendard(._500, size: 16))
                         }
+                        .multilineTextAlignment(.center)
                         .padding(.top, 38)
                         .padding(.bottom, 58)
                         
-                        Rectangle()
-                            .frame(height: 188)
+                        WeaveTextView(
+                            text: viewStore.$inputText,
+                            placeholder: "의견을 작성해 주세요.",
+                            height: 188
+                        )
                     }
-                    .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
                 }
                 WeaveButton(
                     title: "제출하기",
-                    size: .large
-                )
+                    size: .large,
+                    isEnabled: !viewStore.inputText.isEmpty
+                ) {
+                    viewStore.send(.didTappedSummitButton)
+                }
                 .padding(.horizontal, 16)
             }
+            .weaveAlert(
+                isPresented: viewStore.$isShowCompleteAlert,
+                title: "🙇‍♂️\n의견이 정상적으로 제출됐어요.",
+                message: "소중한 의견 감사합니다!",
+                primaryButtonTitle: "확인했어요",
+                primaryAction: {
+                    viewStore.send(.didTappedUserCompleteButton)
+                }
+            )
             .navigationTitle("위브 개선 제안")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
