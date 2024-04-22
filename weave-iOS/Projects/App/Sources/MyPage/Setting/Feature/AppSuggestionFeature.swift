@@ -23,6 +23,7 @@ struct AppSuggestionFeature: Reducer {
         case didTappedDismiss
         case didTappedSummitButton
         case requestSuggestionText
+        case replaceInputText(text: String)
         case didSuccessedSummit
         case didTappedUserCompleteButton
         case binding(BindingAction<State>)
@@ -36,6 +37,9 @@ struct AppSuggestionFeature: Reducer {
                 return .run { send in
                     await dismiss()
                 }
+            case .replaceInputText(let text):
+                state.inputText = text
+                return .none
             case .didTappedSummitButton:
                 return .send(.requestSuggestionText)
             case .requestSuggestionText:
@@ -49,7 +53,9 @@ struct AppSuggestionFeature: Reducer {
                 state.isShowCompleteAlert = true
                 return .none
             case .didTappedUserCompleteButton:
-                return .none
+                return .run { send in
+                    await dismiss()
+                }
             case .binding(_):
                 return .none
             }
@@ -57,6 +63,8 @@ struct AppSuggestionFeature: Reducer {
     }
     
     func requestSuggestionText(text: String) async throws {
-        
+        let endPoint = APIEndpoints.appSuggestionRequest(text: text)
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint, successCode: 201)
     }
 }

@@ -11,6 +11,8 @@ import ComposableArchitecture
 
 struct AppSuggestionView: View {
     let store: StoreOf<AppSuggestionFeature>
+    let textLimit = 2000
+    @State var isShowTextLimitAlert: Bool = false
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
@@ -32,6 +34,13 @@ struct AppSuggestionView: View {
                             placeholder: "의견을 작성해 주세요.",
                             height: 188
                         )
+                        .onChange(of: viewStore.inputText) { oldValue, newValue in
+                            if newValue.count > textLimit {
+                                isShowTextLimitAlert = true
+                                let newText = viewStore.inputText.prefix(textLimit)
+                                viewStore.send(.replaceInputText(text: String(newText)))
+                            }
+                        }
                     }
                     .padding(.horizontal, 16)
                 }
@@ -44,6 +53,14 @@ struct AppSuggestionView: View {
                 }
                 .padding(.horizontal, 16)
             }
+            .weaveAlert(
+                isPresented: $isShowTextLimitAlert,
+                title: "🙇‍♂️\n최대 2000자까지 작성 가능해요.",
+                primaryButtonTitle: "확인했어요",
+                primaryAction: {
+                    viewStore.send(.didTappedUserCompleteButton)
+                }
+            )
             .weaveAlert(
                 isPresented: viewStore.$isShowCompleteAlert,
                 title: "🙇‍♂️\n의견이 정상적으로 제출됐어요.",

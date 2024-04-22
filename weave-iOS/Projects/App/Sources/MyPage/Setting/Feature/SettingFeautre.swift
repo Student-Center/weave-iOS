@@ -17,6 +17,7 @@ struct SettingFeautre: Reducer {
         @BindingState var isShowLogoutAlert: Bool = false
         @BindingState var isShowUnregisterAlert: Bool = false
         @BindingState var isShowPasteSuccessAlert: Bool = false
+        @PresentationState var destination: Destination.State?
     }
     
     enum Action: BindableAction {
@@ -27,6 +28,7 @@ struct SettingFeautre: Reducer {
         case showUnregisterAlert
         case resignSuccessed
         case binding(BindingAction<State>)
+        case destination(PresentationAction<Destination.Action>)
     }
     
     var body: some ReducerOf<Self> {
@@ -48,6 +50,8 @@ struct SettingFeautre: Reducer {
                     state.isShowLogoutAlert = true
                 case .unregister:
                     state.isShowUnregisterAlert = true
+                case .appSuggestion:
+                    state.destination = .appSuggestion(.init())
                 }
                 return .none
             case .showLogoutAlert:
@@ -80,7 +84,12 @@ struct SettingFeautre: Reducer {
                 
             case .binding(_):
                 return .none
+            default:
+                return .none
             }
+        }
+        .ifLet(\.$destination, action: /Action.destination) {
+          Destination()
         }
     }
     
@@ -99,5 +108,22 @@ struct SettingFeautre: Reducer {
     private func resetLoginToken() {
         UDManager.accessToken = ""
         UDManager.refreshToken = ""
+    }
+}
+
+//MARK: - Destination
+extension SettingFeautre {
+    struct Destination: Reducer {
+        enum State: Equatable {
+            case appSuggestion(AppSuggestionFeature.State)
+        }
+        enum Action {
+            case appSuggestion(AppSuggestionFeature.Action)
+        }
+        var body: some ReducerOf<Self> {
+            Scope(state: /State.appSuggestion, action: /Action.appSuggestion) {
+                AppSuggestionFeature()
+            }
+        }
     }
 }
