@@ -76,7 +76,7 @@ struct AppSuggestionView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-//                        viewStore.send(.didTappedDismiss)
+                        viewStore.send(.didTappedDismiss)
                     } label: {
                         Image(systemName: "chevron.left")
                     }
