@@ -53,6 +53,9 @@ struct AppSuggestionView: View {
                 }
                 .padding(.horizontal, 16)
             }
+            .onAppear {
+                UIApplication.shared.hideKeyboard()
+            }
             .weaveAlert(
                 isPresented: $isShowTextLimitAlert,
                 title: "🙇‍♂️\n최대 2000자까지 작성 가능해요.",
