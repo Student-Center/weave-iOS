@@ -50,6 +50,13 @@ struct SettingView: View {
                 .frame(height: 40)
                 .padding(.bottom, 60)
             }
+            .navigationDestination(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /SettingFeautre.Destination.State.appSuggestion,
+                action: SettingFeautre.Destination.Action.appSuggestion
+            ) { store in
+                AppSuggestionView(store: store)
+            }
             .padding(.horizontal, 16)
             .navigationTitle("설정")
             .navigationBarTitleDisplayMode(.inline)

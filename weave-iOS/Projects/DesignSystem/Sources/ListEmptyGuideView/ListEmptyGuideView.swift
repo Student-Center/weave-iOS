@@ -34,7 +34,6 @@ public struct ListEmptyGuideView: View {
         VStack(spacing: 10) {
             Text(headerTitle)
                 .font(.pretendard(._600, size: 22))
-                .multilineTextAlignment(.center)
                 .lineSpacing(5)
             if let subTitle {
                 Text(subTitle)
@@ -50,6 +49,7 @@ public struct ListEmptyGuideView: View {
                 .padding(.horizontal, 80)
             }
         }
+        .multilineTextAlignment(.center)
         .frame(height: viewSize.height)
     }
 }

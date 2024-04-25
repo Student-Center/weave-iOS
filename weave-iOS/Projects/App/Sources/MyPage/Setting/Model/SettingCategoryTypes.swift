@@ -10,6 +10,7 @@ import Foundation
 enum SettingCategoryTypes: CaseIterable {
     case policies
     case account
+    case user
     
     var headerTitle: String {
         switch self {
@@ -17,6 +18,8 @@ enum SettingCategoryTypes: CaseIterable {
             return "약관 및 정책"
         case .account:
             return "계정"
+        case .user:
+            return "고객"
         }
     }
     
@@ -33,6 +36,10 @@ enum SettingCategoryTypes: CaseIterable {
                 .logout,
                 .unregister
             ]
+        case .user:
+            return [
+                .appSuggestion
+            ]
         }
     }
     
@@ -42,6 +49,7 @@ enum SettingCategoryTypes: CaseIterable {
         case myID
         case logout
         case unregister
+        case appSuggestion
         
         var title: String {
             switch self {
@@ -50,6 +58,7 @@ enum SettingCategoryTypes: CaseIterable {
             case .myID: return "내 ID"
             case .logout: return "로그아웃"
             case .unregister: return "회원 탈퇴"
+            case .appSuggestion: return "위브 개선 제안"
             }
         }
         
@@ -61,7 +70,7 @@ enum SettingCategoryTypes: CaseIterable {
             case .privacyPolicy:
                 guard let url = URL(string: "https://weave-org.notion.site/WEAVE-a65c3e3a483e4ec1bcc94353b21f771b") else { return nil }
                 return url
-            case .myID, .logout, .unregister: return nil
+            default: return nil
             }
         }
     }
