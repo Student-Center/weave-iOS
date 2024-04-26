@@ -1,23 +1,11 @@
 //
-//  AppScreen.swift
-//  weave-ios
+//  TabViewCoordinator.swift
+//  Weave-ios
 //
-//  Created by 강동영 on 2/21/24.
+//  Created by Jisu Kim on 4/26/24.
 //
 
-import SwiftUI
-import DesignSystem
-import ComposableArchitecture
-
-enum AppScreen: Codable, Hashable, Identifiable, CaseIterable {
-    case chat
-    case request
-    case home
-    case myTeam
-    case myPage
-    
-    var id: AppScreen { self }
-}
+import Foundation
 
 @Observable final class TabViewCoordinator {
     public var currentTab: AppScreen

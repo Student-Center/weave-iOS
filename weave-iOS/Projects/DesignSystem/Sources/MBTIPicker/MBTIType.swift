@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreKit
 
 public enum MBTIType: String {
     case INFP
@@ -69,5 +70,11 @@ public enum MBTIType: String {
     
     public var description: String {
         return "\(emoji) \(self.rawValue)•\(feature)"
+    }
+}
+
+extension MBTIType {
+    public var mbtiProfileImage: String {
+        return "\(SecretKey.serverResourcePath)/mbti_profile_image/list/\(self.rawValue).png"
     }
 }

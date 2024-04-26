@@ -10,6 +10,7 @@ import KakaoSDKCommon
 import KakaoSDKShare
 import KakaoSDKTemplate
 import SafariServices
+import CoreKit
 
 class KakaoShareManager {
     static func getMeetingTeamShareMessage(teamId: String) -> Data {
