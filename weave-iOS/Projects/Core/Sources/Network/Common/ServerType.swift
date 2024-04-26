@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreKit
 
 enum ServerType: String {
     case dev // db 개발, api 개발

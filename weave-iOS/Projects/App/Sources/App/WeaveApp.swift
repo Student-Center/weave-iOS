@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import CoreKit
 import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
